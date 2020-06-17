@@ -2,6 +2,8 @@ package com.zombies.utils;
 
 import com.zombies.main.IsometricZombies;
 
+import java.util.Objects;
+
 public class IntVector {
     public final int x, y;
 
@@ -29,4 +31,18 @@ public class IntVector {
         return new IntVector(x, y);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IntVector intVector = (IntVector) o;
+        return x == intVector.x &&
+                y == intVector.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 }

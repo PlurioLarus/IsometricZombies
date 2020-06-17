@@ -5,13 +5,16 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.zombies.input.Input;
 
 public abstract class Scene {
 
     protected OrthographicCamera camera = new OrthographicCamera();
     protected final Stage stage = new Stage(new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
 
-    public abstract void initialize();
+    public void initialize() {
+        stage.addListener(new Input());
+    }
 
     public void update(float deltaTime) {
         camera.update();

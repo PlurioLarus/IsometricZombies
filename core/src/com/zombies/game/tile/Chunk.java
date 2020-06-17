@@ -23,7 +23,7 @@ public class Chunk {
         for (int x = 0; x < tiles.length; x++) {
             for (int y = 0; y < this.tiles[x].length; y++) {
                 IntVector position = chunkPosition.times(32).plus(new IntVector(x, y)).toScreenCoords();
-                batch.draw(this.tiles[x][y].texture, position.x, position.y);
+                batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 16);
             }
         }
     }
