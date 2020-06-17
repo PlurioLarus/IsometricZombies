@@ -1,5 +1,7 @@
 package com.zombies.scene.game;
 
+import com.zombies.game.entity.EntityPlayer;
+import com.zombies.game.entity.EntityRegistry;
 import com.zombies.main.Game;
 import com.zombies.scene.Scene;
 import com.zombies.utils.Vector;
@@ -14,6 +16,7 @@ public class GameScene extends Scene {
         super.initialize();
 
         Game clientGame = null, serverGame = null;
+        EntityRegistry.register("player", EntityPlayer::new);
         try {
             serverGame = new Game(true, camera);
             clientGame = new Game(false, camera);

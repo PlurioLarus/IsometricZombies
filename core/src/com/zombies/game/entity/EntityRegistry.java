@@ -2,27 +2,25 @@ package com.zombies.game.entity;
 
 import com.zombies.main.Game;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EntityRegistry {
 
-    private static final Map<String, Entity> entities = new HashMap<>();
+    private static final Map<String, EntityCreator> entities = new HashMap<>();
 
     public static <T extends Entity> T get(String id, Game game, boolean localPlayer, int netId) {
-        T obj = (T) entities.get(id).clone();
-
-        try {
-            return clazz.getConstructor(Game.class, boolean.class, int.class).newInstance(game, localPlayer, netId);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        return null;
+        EntityCreator creator = entities.get(id);
+        return (T) creator.create(game, localPlayer, netId);
     }
 
-    public static <T extends Entity> void register(String key, T entity) {
+    public static void register(String key, EntityCreator entity) {
         entities.put(key, entity);
+    }
+
+    @FunctionalInterface
+    public static interface EntityCreator {
+        Entity create(Game game, boolean localPlayer, int netId);
     }
 
 

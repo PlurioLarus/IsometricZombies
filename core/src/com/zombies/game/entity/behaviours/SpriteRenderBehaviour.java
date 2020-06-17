@@ -3,6 +3,7 @@ package com.zombies.game.entity.behaviours;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.entity.Entity;
+import com.zombies.rendering.TextureRegistry;
 import com.zombies.utils.Vector;
 
 public class SpriteRenderBehaviour implements IBehaviour {
@@ -10,7 +11,7 @@ public class SpriteRenderBehaviour implements IBehaviour {
     Vector offset;
 
     public SpriteRenderBehaviour(String imagePath, Vector offset) {
-        tex = new Texture(imagePath);
+        tex = TextureRegistry.get(imagePath);
         this.offset = offset;
     }
 

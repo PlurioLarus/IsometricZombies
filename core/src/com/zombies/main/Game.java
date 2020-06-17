@@ -1,13 +1,13 @@
 package com.zombies.main;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.zombies.game.entity.EntityPlayer;
-import com.zombies.game.entity.EntityRegistry;
 import com.zombies.game.tile.TileMap;
 import com.zombies.networking.Networking;
+import com.zombies.rendering.TextureRegistry;
 import com.zombies.utils.Vector;
 
 import java.io.IOException;
@@ -18,6 +18,10 @@ public class Game extends Group {
     private Networking networking;
     private TileMap map;
 
+    public TileMap getMap() {
+        return map;
+    }
+
     public Game(boolean isServer, OrthographicCamera camera) throws IOException {
         this.isServer = isServer;
         this.camera = camera;
@@ -26,7 +30,6 @@ public class Game extends Group {
 
     private void initialize() throws IOException {
         map = new TileMap(this);
-        EntityRegistry.register("player", new EntityPlayer(this, false, 0));
         if (isServer) {
             networking = Networking.server(new Listener() {
                 @Override
@@ -36,6 +39,7 @@ public class Game extends Group {
                 }
             });
         } else {
+            TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
             networking = Networking.client("localhost", null);
             addActor(map);
         }

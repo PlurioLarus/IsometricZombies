@@ -46,14 +46,14 @@ public class TileMap extends Actor implements ITileMap {
 
     @Override
     public void act(float delta) {
-        //loadedEntities.forEach(e -> e.update(delta));
+        loadedEntities.forEach(e -> e.update(delta));
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         loadedChunks.forEach(e -> e.draw(batch));
-        //loadedEntities.forEach(e -> e.draw(batch));
+        loadedEntities.forEach(e -> e.draw(batch));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class TileMap extends Actor implements ITileMap {
         System.out.println("[CLIENT] Spawn Player");
         boolean spawnAsLocalPlayer = game.getNetworking().getID() == localPlayer;
         Entity e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, id);
-        //game.getNetworking().registerRemoteObject(id, e);
-        //loadedEntities.add(e);
+        game.getNetworking().registerRemoteObject(id, e);
+        loadedEntities.add(e);
     }
 }
