@@ -10,20 +10,18 @@ import com.zombies.utils.IntVector;
 public abstract class Tile {
     Game game;
     Texture texture;
+    Texture shadow;
     TileObject tileObject;
     IntVector position;
     int height;
 
 
-    public Tile(Game game, IntVector position, int height, String texturePath) {
+    public Tile(Game game, IntVector position, int height, String textureId) {
         this.game = game;
         this.position = position;
         this.height = height;
-        if(isLowerAsFront()){
-            this.texture = TextureRegistry.get("shadowTile");
-        }else {
-            this.texture = TextureRegistry.get(texturePath);
-        }
+        this.texture = TextureRegistry.get(textureId);
+        setShadows();
 
     }
 
@@ -31,11 +29,19 @@ public abstract class Tile {
         return height;
     }
 
-    public boolean isLowerAsFront(){
+    public void setShadows(){
         World world = game.getWorld();
-        return (world.getHeight(position) < world.getHeight(position.minus(new IntVector(1,1))));
-            //|| world.getHeight(position) < world.getHeight(position.minus(new IntVector(1,0)))
-            //|| world.getHeight(position) < world.getHeight(position.minus(new IntVector(0,1))));
+        boolean rightFrontHigher = world.getHeight(position) < world.getHeight(position.minus(new IntVector(0,1)));
+        boolean leftFrontHigher = world.getHeight(position) < world.getHeight(position.minus(new IntVector(1,0)));
+        if(leftFrontHigher){
+            if(rightFrontHigher){
+                shadow = TextureRegistry.get("shadow");
+            }else{
+                shadow = TextureRegistry.get("leftShadow");
+            }
+        }else if (rightFrontHigher){
+            shadow = TextureRegistry.get("rightShadow");
+        }
     }
 
     public TileObject getTileObject(){

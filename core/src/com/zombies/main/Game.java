@@ -53,7 +53,9 @@ public class Game extends Group {
         } else {
             TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
             TextureRegistry.register("fancyTile", new Texture("fancyTile.png"));
-            TextureRegistry.register("shadowTile", new Texture("shadowTile.png"));
+            TextureRegistry.register("shadow", new Texture("shadow.png"));
+            TextureRegistry.register("leftShadow", new Texture("leftShadow.png"));
+            TextureRegistry.register("rightShadow", new Texture("rightShadow.png"));
             TextureRegistry.register("tree", new Texture("tree.png"));
             TextureRegistry.register("fancyOtherTile", new Texture("fancyOtherTile.png"));
             networking = Networking.client("localhost", null);

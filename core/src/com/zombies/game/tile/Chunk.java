@@ -35,12 +35,11 @@ public class Chunk {
             for (int y = this.tiles[x].length-1; y >=0 ; y--) {
                 IntVector position = chunkPosition.times(32).plus(new IntVector(x, y)).toScreenCoords();
 
-                if (tiles[x][y].isLowerAsFront()){
-                    batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
-                }else {
-                    batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
-                }
+                batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
 
+                if (this.tiles[x][y].shadow != null) {
+                    batch.draw(this.tiles[x][y].shadow, position.x - 16, position.y - 24 + tiles[x][y].height);
+                }
 
                 TileObject tileObject = this.tiles[x][y].getTileObject();
                 if (tileObject != null){
