@@ -130,4 +130,8 @@ public class Game extends Group {
     public EntityManager getEntityManager() {
         return entityManager;
     }
+
+    public boolean isServer() {
+        return isServer;
+    }
 }
