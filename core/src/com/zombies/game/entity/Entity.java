@@ -10,6 +10,7 @@ import java.util.List;
 
 public abstract class Entity implements IEntity {
     protected Vector position = new Vector(0, 0);
+    protected Vector lastPosition = new Vector(0, 0);
     protected List<IBehaviour> behaviours = new ArrayList<>();
 
     protected final Game game;
@@ -33,6 +34,7 @@ public abstract class Entity implements IEntity {
     }
 
     public void update(float deltaTime) {
+        lastPosition = position;
         behaviours.forEach(b -> b.update(deltaTime, this));
     }
 
@@ -42,6 +44,9 @@ public abstract class Entity implements IEntity {
 
     public Vector getPosition() {
         return position;
+    }
+    public Vector getLastPosition() {
+        return lastPosition;
     }
 
     public String getIdentifier() {

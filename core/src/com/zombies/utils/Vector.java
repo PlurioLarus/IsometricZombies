@@ -43,6 +43,10 @@ public class Vector {
         return new Vector(x, y);
     }
 
+    public IntVector toChunkPos(){
+        return new IntVector((int)Math.floor(this.x/32), (int) Math.floor(this.y/32));
+    }
+
     public float getLength() {
         return (float) Math.sqrt(x * x + y * y);
     }

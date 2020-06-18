@@ -14,7 +14,7 @@ public class Chunk {
         this.tiles = new Tile[32][32];
         for (int x = 0; x < this.tiles.length; x++) {
             for (int y = 0; y < this.tiles[x].length; y++) {
-                this.tiles[x][y] = new StandardTile();
+                this.tiles[x][y] = new StandardTile(32*chunkPosition.x + x, 32*chunkPosition.y + y);
             }
         }
     }

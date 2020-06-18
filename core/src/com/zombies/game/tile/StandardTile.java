@@ -1,7 +1,10 @@
 package com.zombies.game.tile;
 
+import com.zombies.utils.OpenSimplexNoise;
+
 public class StandardTile extends Tile {
-    public StandardTile() {
-        super(Math.random() > 0.5 ? "fancyTile.png" : "fancyOtherTile.png");
+    OpenSimplexNoise n = new OpenSimplexNoise();
+    public StandardTile(int x, int y) {
+        super(new OpenSimplexNoise().eval((float)x/10,(float)y/10) > 0 ? "fancyTile" : "fancyOtherTile");
     }
 }
