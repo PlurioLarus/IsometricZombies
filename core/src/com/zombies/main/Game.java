@@ -55,7 +55,7 @@ public class Game extends Group {
         } else {
             TextureRegistry.register("characterBL", new Texture("character/characterBL.png"));
             TextureRegistry.register("characterBR", new Texture("character/characterBR.png"));
-            TextureRegistry.register("fancyTile", new Texture("fancyTile.png"));
+            TextureRegistry.register("fancyTile", new Texture("tiles/fancyTile.png"));
 
             TextureRegistry.register("shadow01", new Texture("shadows/shadow01.png"));
             TextureRegistry.register("shadow02", new Texture("shadows/shadow02.png"));
@@ -73,8 +73,7 @@ public class Game extends Group {
             TextureRegistry.register("shadow32", new Texture("shadows/shadow32.png"));
             TextureRegistry.register("shadow33", new Texture("shadows/shadow33.png"));
 
-            TextureRegistry.register("tree", new Texture("tree.png"));
-            TextureRegistry.register("fancyOtherTile", new Texture("fancyOtherTile.png"));
+            TextureRegistry.register("tree", new Texture("tileObjects/tree.png"));
             networking = Networking.client("localhost", null);
         }
         networking.registerRemoteObject(TileMap.NET_ID, tileMap);
