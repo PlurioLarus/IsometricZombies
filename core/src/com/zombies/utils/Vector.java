@@ -43,6 +43,10 @@ public class Vector {
         return new Vector(x, y);
     }
 
+    /**
+     * TODO: check round of this.x/this.y relative to their tile
+     * @return
+     */
     public IntVector toChunkPos(){
         return new IntVector((int)Math.floor(this.x/32), (int) Math.floor(this.y/32));
     }
@@ -57,6 +61,10 @@ public class Vector {
             return Vector.zero;
         }
         return new Vector(x / length, y / length);
+    }
+
+    public IntVector roundToIntVector(){
+        return new IntVector(Math.round(this.x), Math.round(this.y));
     }
 
     @Override

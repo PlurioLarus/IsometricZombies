@@ -31,7 +31,7 @@ public class GameScene extends Scene {
             e.printStackTrace();
         }
         stage.addActor(clientGame);
-        camera.zoom = 0.5f;
+        camera.zoom = 0.3f;
     }
 
     @Override

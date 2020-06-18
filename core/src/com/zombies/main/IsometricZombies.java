@@ -21,7 +21,8 @@ public class IsometricZombies extends ApplicationAdapter {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        //Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.gl.glClearColor(150f/255, 100f/255, 50f/255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         sM.update();

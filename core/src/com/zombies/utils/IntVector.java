@@ -22,6 +22,10 @@ public class IntVector {
         return new IntVector(this.x + vector.x, this.y + vector.y);
     }
 
+    public IntVector minus(IntVector vector) {
+        return new IntVector(this.x - vector.x, this.y - vector.y);
+    }
+
     public IntVector times(int multiplier) {
         return new IntVector(this.x * multiplier, this.y * multiplier);
     }
@@ -37,6 +41,9 @@ public class IntVector {
         return new IntVector(x, y);
     }
 
+    public IntVector toChunkPos(){
+        return new IntVector((int)Math.floor((double)this.x/32), (int) Math.floor((double)this.y/32));
+    }
 
     @Override
     public boolean equals(Object o) {
