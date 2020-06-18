@@ -16,8 +16,4 @@ public class EntityPlayer extends Entity {
         game.setCameraPosition(position);
         registerBehaviour(new CameraFollowBehaviour());
     }
-
-    public boolean hasChangedChunk(){
-        return !lastPosition.toChunkPos().equals(position.toChunkPos());
-    }
 }

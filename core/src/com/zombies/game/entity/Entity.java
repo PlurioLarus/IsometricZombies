@@ -43,6 +43,9 @@ public abstract class Entity implements IEntity {
     public Vector getPosition() {
         return position;
     }
+    public Vector getLastPosition() {
+        return lastPosition;
+    }
 
     public Game getGame() {
         return game;

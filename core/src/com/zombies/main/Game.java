@@ -36,10 +36,6 @@ public class Game extends Group {
     private void initialize() throws IOException {
         tileMap = new TileMap(this);
         chunkLoader = new ChunkLoader(this);
-        chunkLoader.loadChunk(new IntVector(0,0));
-        chunkLoader.loadChunk(new IntVector(1,0));
-        chunkLoader.loadChunk(new IntVector(0,1));
-        chunkLoader.loadChunk(new IntVector(1,1));
 
 
         if (isServer) {
@@ -52,6 +48,8 @@ public class Game extends Group {
             });
         } else {
             TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
+            TextureRegistry.register("fancyTile", new Texture("fancyTile.png"));
+            TextureRegistry.register("fancyOtherTile", new Texture("fancyOtherTile.png"));
             networking = Networking.client("localhost", null);
             addActor(tileMap);
         }
@@ -88,6 +86,7 @@ public class Game extends Group {
     }
 
     public void addPlayer(EntityPlayer player){
+        chunkLoader.loadSurroundingChunks(player.getPosition().toChunkPos());
         players.add(player);
     }
 }
