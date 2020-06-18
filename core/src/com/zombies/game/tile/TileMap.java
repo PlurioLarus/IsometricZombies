@@ -26,7 +26,7 @@ public class TileMap extends NetworkedManager implements ITileMap {
     public void loadChunk(IntVector chunkPosition) {
         if (game.getNetworking().isServer()) {
             System.out.println("[SERVER] Loaded Chunk " + chunkPosition);
-            loadedChunks.put(chunkPosition, new Chunk(chunkPosition));
+            loadedChunks.put(chunkPosition, new Chunk(game, chunkPosition));
             sendEventToClients(new ChunkLoadedEvent(chunkPosition));
         }
     }
@@ -44,8 +44,8 @@ public class TileMap extends NetworkedManager implements ITileMap {
         Chunk chunk = getChunk(chunkPosition);
         if (chunk == null) {
             //TODO auf jedenfall fixen
-            return new StandardTile(game,new IntVector(0,0),0);
-        }else{
+            return new StandardTile(game, new IntVector(0, 0), 0);
+        } else {
             return chunk.getTile(position.minus(chunkPosition.times(32)));
         }
     }
@@ -75,7 +75,7 @@ public class TileMap extends NetworkedManager implements ITileMap {
 
     private void handleChunkLoadedEvent(ChunkLoadedEvent event) {
         System.out.println("[CLIENT] Loaded Chunk " + event.chunkPosition);
-        loadedChunks.put(event.chunkPosition, new Chunk(event.chunkPosition));
+        loadedChunks.put(event.chunkPosition, new Chunk(game, event.chunkPosition));
     }
 
     @Override

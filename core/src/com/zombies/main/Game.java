@@ -32,7 +32,6 @@ public class Game extends Group {
     public Game(boolean isServer, OrthographicCamera camera) throws IOException {
         this.isServer = isServer;
         this.camera = camera;
-        players = new ArrayList<>();
         world = new World();
         initialize();
     }
@@ -105,7 +104,8 @@ public class Game extends Group {
     public Networking getNetworking() {
         return networking;
     }
-    public World getWorld(){
+
+    public World getWorld() {
         return world;
     }
 
