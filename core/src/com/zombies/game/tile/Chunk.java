@@ -1,10 +1,14 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.zombies.game.entity.Entity;
 import com.zombies.game.tile.objects.TileObject;
 import com.zombies.main.Game;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.OpenSimplexNoise;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Chunk {
     private final Game game;
@@ -28,6 +32,12 @@ public class Chunk {
         return tiles[relativeTilePos.x][relativeTilePos.y];
     }
 
+    public List<Entity> getEntitiesOnTile(IntVector tilePosition){
+        return game.getEntityManager().getLoadedEntities().stream()
+                .filter(e -> e.getPosition().roundToIntVector().equals(tilePosition))
+                .collect(Collectors.toList());
+    }
+
     public void draw(Batch batch) {
         //for (int x = 0; x < tiles.length; x++) {
         for (int x = tiles.length-1; x >=0 ; x--) {
@@ -45,6 +55,8 @@ public class Chunk {
                 if (tileObject != null){
                     batch.draw(tileObject.getTexture(), position.x - 16, position.y - 8 + tiles[x][y].height);
                 }
+
+                getEntitiesOnTile(chunkPosition.times(32).plus(new IntVector(x, y))).forEach(e-> e.draw(batch));
             }
         }
     }

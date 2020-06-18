@@ -21,6 +21,10 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
         super(game, NET_ID);
     }
 
+    public List<Entity> getLoadedEntities() {
+        return loadedEntities;
+    }
+
     public EntityPlayer spawnPlayer(int localPlayer) {
         System.out.println("[SERVER] Spawn Player");
         List<IEntityManager> entityManagers = game.getNetworking().getClientRemoteObjects(NET_ID, IEntityManager.class);
@@ -61,7 +65,7 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
 
     @Override
     public void draw(Batch batch) {
-        loadedEntities.forEach(e -> e.draw(batch));
+        //loadedEntities.forEach(e -> e.draw(batch));
     }
 
     @Override
