@@ -9,6 +9,7 @@ import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.tile.Chunk;
 import com.zombies.game.tile.ChunkLoader;
 import com.zombies.game.tile.TileMap;
+import com.zombies.game.world.World;
 import com.zombies.networking.Networking;
 import com.zombies.rendering.TextureRegistry;
 import com.zombies.utils.IntVector;
@@ -26,10 +27,13 @@ public class Game extends Group {
     private TileMap tileMap;
     private final  List<EntityPlayer> players;
 
+    private final World world;
+
     public Game(boolean isServer, OrthographicCamera camera) throws IOException {
         this.isServer = isServer;
         this.camera = camera;
         players = new ArrayList<>();
+        world = new World();
         initialize();
     }
 
@@ -49,6 +53,7 @@ public class Game extends Group {
         } else {
             TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
             TextureRegistry.register("fancyTile", new Texture("fancyTile.png"));
+            TextureRegistry.register("shadowTile", new Texture("shadowTile.png"));
             TextureRegistry.register("tree", new Texture("tree.png"));
             TextureRegistry.register("fancyOtherTile", new Texture("fancyOtherTile.png"));
             networking = Networking.client("localhost", null);
@@ -84,6 +89,9 @@ public class Game extends Group {
     }
     public Networking getNetworking() {
         return networking;
+    }
+    public World getWorld(){
+        return world;
     }
 
     public void addPlayer(EntityPlayer player){

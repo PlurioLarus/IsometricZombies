@@ -26,7 +26,7 @@ public class ChunkLoader {
 
     public void loadChunk(IntVector chunkPos) {
         if (!loadedChunks.containsKey(chunkPos)) {
-        loadedChunks.put(chunkPos, new Chunk(chunkPos));
+        loadedChunks.put(chunkPos, new Chunk(game, chunkPos));
         //loadedChunks.sort(Comparator.comparingInt(a -> -a.chunkPosition.toScreenCoords().y));
         }else{
             //throw new ChunkAlreadyLoadedException();
