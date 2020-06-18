@@ -1,11 +1,15 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.zombies.game.entity.Entity;
 import com.zombies.game.tile.objects.TileObject;
 import com.zombies.game.world.World;
 import com.zombies.main.Game;
 import com.zombies.rendering.TextureRegistry;
 import com.zombies.utils.IntVector;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Tile {
     Game game;
@@ -27,6 +31,12 @@ public abstract class Tile {
 
     public int getHeight() {
         return height;
+    }
+
+    public List<Entity> getEntities(){
+        return game.getEntityManager().getLoadedEntities().stream()
+                .filter(e -> e.getPosition().roundToIntVector().equals(position))
+                .collect(Collectors.toList());
     }
 
     public void setShadows(){
