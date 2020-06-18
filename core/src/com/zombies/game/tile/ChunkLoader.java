@@ -32,7 +32,7 @@ public class ChunkLoader {
         loadedChunksLog.put(chunkPos, true);
         loadedChunks.sort(Comparator.comparingInt(a -> a.chunkPosition.toScreenCoords().y));
         }else{
-            throw new ChunkAlreadyLoadedException();
+            //throw new ChunkAlreadyLoadedException();
         }
     }
 
