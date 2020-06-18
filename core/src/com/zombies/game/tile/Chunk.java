@@ -2,24 +2,24 @@ package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.tile.objects.TileObject;
+import com.zombies.main.Game;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.OpenSimplexNoise;
 
 public class Chunk {
-
+    private final Game game;
     public final IntVector chunkPosition;
 
     public final Tile[][] tiles;
 
-    public Chunk(IntVector chunkPosition) {
+    public Chunk(Game game, IntVector chunkPosition) {
+        this.game = game;
         this.chunkPosition = chunkPosition;
         this.tiles = new Tile[32][32];
         for (int x = 0; x < this.tiles.length; x++) {
             for (int y = 0; y < this.tiles[x].length; y++) {
-                double randomness = 1.0f/7;
-                double scale = 25;
-                int height = (int) (scale * new OpenSimplexNoise().eval((float)((chunkPosition.x*32+x))*randomness,(float)((chunkPosition.y*32+y))*randomness));
-                this.tiles[x][y] = new StandardTile(32*chunkPosition.x + x, 32*chunkPosition.y + y,height);
+                int height = game.getWorld().getHeight(chunkPosition.times(32).plus(new IntVector(x,y)));
+                this.tiles[x][y] = new StandardTile(game,new IntVector(32*chunkPosition.x + x, 32*chunkPosition.y + y),height);
             }
         }
     }
@@ -34,7 +34,13 @@ public class Chunk {
             //for (int y = 0; y < this.tiles[x].length; y++) {
             for (int y = this.tiles[x].length-1; y >=0 ; y--) {
                 IntVector position = chunkPosition.times(32).plus(new IntVector(x, y)).toScreenCoords();
+
                 batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
+
+                if (this.tiles[x][y].shadow != null) {
+                    batch.draw(this.tiles[x][y].shadow, position.x - 16, position.y - 24 + tiles[x][y].height);
+                }
+
                 TileObject tileObject = this.tiles[x][y].getTileObject();
                 if (tileObject != null){
                     batch.draw(tileObject.getTexture(), position.x - 16, position.y - 8 + tiles[x][y].height);

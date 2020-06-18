@@ -17,7 +17,6 @@ public class SpriteRenderBehaviour implements IBehaviour {
 
     @Override
     public void update(float deltaTime, Entity entity) {
-
     }
 
     @Override

@@ -44,8 +44,8 @@ public class TileMap extends NetworkedManager implements ITileMap {
         Chunk chunk = getChunk(chunkPosition);
         if (chunk == null) {
             //TODO auf jedenfall fixen
-            return new StandardTile(0, 0, 0);
-        } else {
+            return new StandardTile(game,new IntVector(0,0),0);
+        }else{
             return chunk.getTile(position.minus(chunkPosition.times(32)));
         }
     }
