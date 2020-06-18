@@ -86,7 +86,8 @@ public class Game extends Group {
     }
 
     public void addPlayer(EntityPlayer player){
-        chunkLoader.loadSurroundingChunks(player.getPosition().toChunkPos());
+        //TODO: @NOAH
+        //chunkLoader.loadSurroundingChunks(player.getPosition().toChunkPos());
         players.add(player);
     }
 }
