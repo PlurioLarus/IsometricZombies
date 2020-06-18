@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.main.Game;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public abstract class NetworkedManager implements INetworkedManager {
@@ -21,27 +22,40 @@ public abstract class NetworkedManager implements INetworkedManager {
         addEvent(event);
     }
 
+    public void rpcOnEventReceived(Object event) {
+        addEvent(event);
+    }
+
     public void sendEventToServer(Object event) {
         INetworkedManager serverManager = game.getNetworking().getServerRemoteObject(netID, INetworkedManager.class);
         serverManager.cmdOnEventReceived(event);
     }
 
+    public void sendEventToClients(Object event) {
+        List<INetworkedManager> managers = game.getNetworking().getClientRemoteObjects(netID, INetworkedManager.class);
+        managers.forEach(m -> m.rpcOnEventReceived(event));
+    }
+
     public synchronized void addEvent(Object event) {
-        if (game.getNetworking().isServer()) {
-            eventQueue.add(event);
-        }
+        eventQueue.add(event);
     }
 
     public abstract void update(float deltaTime);
 
     public abstract void draw(Batch batch);
 
-    protected abstract void handleEvent(Object event);
+    protected abstract void handleServerEvent(Object event);
+
+    protected abstract void handleClientEvent(Object event);
 
     public void fixedUpdate(float fixedDeltaTime) {
         if (game.getNetworking().isServer()) {
             while (!eventQueue.isEmpty()) {
-                handleEvent(eventQueue.poll());
+                handleServerEvent(eventQueue.poll());
+            }
+        } else {
+            while (!eventQueue.isEmpty()) {
+                handleClientEvent(eventQueue.poll());
             }
         }
     }

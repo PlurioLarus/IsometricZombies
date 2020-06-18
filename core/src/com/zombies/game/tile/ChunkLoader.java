@@ -5,28 +5,26 @@ import com.zombies.game.player.Player;
 import com.zombies.main.Game;
 import com.zombies.utils.IntVector;
 
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ChunkLoader {
     final Game game;
     final TileMap tileMap;
-    final Map<IntVector,Chunk> loadedChunks;
+    final Map<IntVector, Chunk> loadedChunks;
 
 
-    public ChunkLoader(Game game){
-         this.game = game;
-         this.tileMap = game.getTileMap();
-         this.loadedChunks = tileMap.getLoadedChunks();
+    public ChunkLoader(Game game) {
+        this.game = game;
+        this.tileMap = game.getTileMap();
+        this.loadedChunks = tileMap.getLoadedChunks();
     }
 
     public void loadChunk(IntVector chunkPos) {
         if (!loadedChunks.containsKey(chunkPos)) {
-        loadedChunks.put(chunkPos, new Chunk(chunkPos));
-        //loadedChunks.sort(Comparator.comparingInt(a -> -a.chunkPosition.toScreenCoords().y));
-        }else{
+            game.getTileMap().loadChunk(chunkPos);
+            //loadedChunks.sort(Comparator.comparingInt(a -> -a.chunkPosition.toScreenCoords().y));
+        } else {
             //throw new ChunkAlreadyLoadedException();
         }
     }
@@ -39,13 +37,13 @@ public class ChunkLoader {
         }
     }
 
-    public void update() {
+    public void fixedUpdate() {
         List<Player> players = game.getPlayerManager().getPlayers();
         for (Player player : players) {
             EntityPlayer p = player.getEntity();
             IntVector playerChunk = p.getPosition().toChunkPos();
-            int deltaX = playerChunk.x - p.getLastPosition().toChunkPos().x;
-            int deltaY = playerChunk.y - p.getLastPosition().toChunkPos().y;
+            int deltaX = playerChunk.x - p.getLastFixedPosition().toChunkPos().x;
+            int deltaY = playerChunk.y - p.getLastFixedPosition().toChunkPos().y;
             if (deltaX > 0) {
                 loadChunk(new IntVector(playerChunk.x + 1, playerChunk.y - 1));
                 loadChunk(new IntVector(playerChunk.x + 1, playerChunk.y));

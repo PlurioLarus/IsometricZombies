@@ -40,6 +40,7 @@ public class PlayerManager {
             EntityPlayer player = game.getEntityManager().spawnPlayer(playerEvent.connection.getID());
             players.add(new Player(playerEvent.connection, player));
             game.getChunkLoader().loadSurroundingChunks(IntVector.zero);
+
         }
     }
 

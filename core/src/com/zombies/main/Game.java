@@ -62,7 +62,6 @@ public class Game extends Group {
     @Override
     public void act(float delta) {
         super.act(delta);
-        chunkLoader.update();
         tileMap.update(delta);
         entityManager.update(delta);
     }
@@ -92,6 +91,7 @@ public class Game extends Group {
     }
 
     public void fixedUpdate() {
+        chunkLoader.fixedUpdate();
         tileMap.fixedUpdate(0.05f);
         entityManager.fixedUpdate(0.05f);
         playerManager.fixedUpdate();

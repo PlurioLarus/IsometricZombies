@@ -54,21 +54,31 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
     }
 
     @Override
+    public void fixedUpdate(float fixedDeltaTime) {
+        super.fixedUpdate(fixedDeltaTime);
+        loadedEntities.forEach(e -> e.fixedUpdate());
+    }
+
+    @Override
     public void draw(Batch batch) {
         loadedEntities.forEach(e -> e.draw(batch));
     }
 
     @Override
-    protected void handleEvent(Object event) {
-        /*if (event instanceof PlayerConnectedEvent) {
+    protected void handleServerEvent(Object event) {
+        if (event instanceof PlayerConnectedEvent) {
             handlePlayerConnected((PlayerConnectedEvent) event);
-        }*/
+        }
+    }
+
+    @Override
+    protected void handleClientEvent(Object event) {
+
     }
 
     private void handlePlayerConnected(PlayerConnectedEvent event) {
         IEntityManager clientMap = game.getNetworking().getClientRemoteObject(NET_ID, event.connection, IEntityManager.class);
         loadedEntities.forEach(e -> clientMap.rpcSpawnEntity(e.getID(), e.getIdentifier()));
-        spawnPlayer(event.connection.getID());
     }
 
 

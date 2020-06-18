@@ -41,8 +41,8 @@ public class IntVector {
         return new IntVector(x, y);
     }
 
-    public IntVector toChunkPos(){
-        return new IntVector((int)Math.floor((double)this.x/32), (int) Math.floor((double)this.y/32));
+    public IntVector toChunkPos() {
+        return new IntVector((int) Math.floor((double) this.x / 32), (int) Math.floor((double) this.y / 32));
     }
 
     @Override
@@ -57,5 +57,13 @@ public class IntVector {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "IntVector{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }

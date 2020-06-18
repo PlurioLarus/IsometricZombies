@@ -12,6 +12,7 @@ import java.util.List;
 public abstract class Entity implements IEntity {
     protected Vector position = new Vector(0, 0);
     protected Vector lastPosition = new Vector(0, 0);
+    protected Vector lastFixedPosition = new Vector(0, 0);
     protected List<IBehaviour> behaviours = new ArrayList<>();
 
     protected final Game game;
@@ -39,6 +40,10 @@ public abstract class Entity implements IEntity {
         behaviours.forEach(b -> b.update(deltaTime, this));
     }
 
+    public void fixedUpdate() {
+        lastFixedPosition = position;
+    }
+
     public void draw(Batch batch) {
         behaviours.forEach(b -> b.draw(batch, this));
     }
@@ -62,14 +67,13 @@ public abstract class Entity implements IEntity {
     public void setPosition(Vector position) {
         this.position = position;
         if (isLocalPlayer()) {
-            System.out.println("[LOCAL] Send: " + position);
             game.getNetworking().getServerRemoteObject(netId, IEntity.class).cmdSetPosition(position);
         } else if (game.getNetworking().isServer()) {
             game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
         }
     }
 
-    public Tile getTile(){
+    public Tile getTile() {
         return game.getTileMap().getTile(position);
     }
 
@@ -90,5 +94,9 @@ public abstract class Entity implements IEntity {
 
     public int getID() {
         return this.netId;
+    }
+
+    public Vector getLastFixedPosition() {
+        return lastFixedPosition;
     }
 }
