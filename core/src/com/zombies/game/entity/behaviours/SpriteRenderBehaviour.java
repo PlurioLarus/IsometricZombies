@@ -23,6 +23,6 @@ public class SpriteRenderBehaviour implements IBehaviour {
     @Override
     public void draw(Batch batch, Entity entity) {
         Vector renderPosition = entity.getPosition().toScreenCoords().minus(new Vector(offset.x * tex.getWidth(), offset.y * tex.getHeight()));
-        batch.draw(tex, renderPosition.x, renderPosition.y);
+        batch.draw(tex, renderPosition.x, renderPosition.y + entity.getTile().getHeight());
     }
 }

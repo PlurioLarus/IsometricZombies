@@ -2,6 +2,7 @@ package com.zombies.game.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.entity.behaviours.IBehaviour;
+import com.zombies.game.tile.Tile;
 import com.zombies.main.Game;
 import com.zombies.utils.Vector;
 
@@ -58,6 +59,10 @@ public abstract class Entity implements IEntity {
         } else if (game.getNetworking().isServer()) {
             // game.getNetworking().getRemoteObjects(id, IEntity.class).forEach(e -> e.rpcSetPosition(position));
         }
+    }
+
+    public Tile getTile(){
+        return game.getTileMap().getTile(position);
     }
 
     @Override

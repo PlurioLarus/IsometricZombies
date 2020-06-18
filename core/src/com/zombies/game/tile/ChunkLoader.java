@@ -15,22 +15,19 @@ import java.util.Map;
 public class ChunkLoader {
     final Game game;
     final TileMap tileMap;
-    final List<Chunk> loadedChunks;
-    final Map<IntVector,Boolean> loadedChunksLog;
+    final Map<IntVector,Chunk> loadedChunks;
 
 
     public ChunkLoader(Game game){
          this.game = game;
          this.tileMap = game.getTileMap();
          this.loadedChunks = tileMap.getLoadedChunks();
-         this.loadedChunksLog = new HashMap<>();
     }
 
     public void loadChunk(IntVector chunkPos) {
-        if (!loadedChunksLog.containsKey(chunkPos)) {
-        loadedChunks.add(new Chunk(chunkPos));
-        loadedChunksLog.put(chunkPos, true);
-        loadedChunks.sort(Comparator.comparingInt(a -> a.chunkPosition.toScreenCoords().y));
+        if (!loadedChunks.containsKey(chunkPos)) {
+        loadedChunks.put(chunkPos, new Chunk(chunkPos));
+        //loadedChunks.sort(Comparator.comparingInt(a -> -a.chunkPosition.toScreenCoords().y));
         }else{
             //throw new ChunkAlreadyLoadedException();
         }

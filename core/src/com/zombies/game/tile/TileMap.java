@@ -10,9 +10,7 @@ import com.zombies.main.Game;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class TileMap extends Actor implements ITileMap {
 
@@ -20,16 +18,36 @@ public class TileMap extends Actor implements ITileMap {
 
     final Game game;
 
-    final List<Chunk> loadedChunks = new ArrayList<>();
+    final Map<IntVector,Chunk> loadedChunks = new HashMap<>();
     final List<Entity> loadedEntities = new ArrayList<>();
 
     public TileMap(Game game) {
         this.game = game;
     }
 
-    public List<Chunk> getLoadedChunks(){
+    public Map<IntVector,Chunk> getLoadedChunks(){
         return loadedChunks;
     }
+
+    public Tile getTile(Vector position){
+        return getTile(position.roundToIntVector());
+    }
+
+    public Tile getTile(IntVector position){
+        IntVector chunkPosition = position.toChunkPos();
+        Chunk chunk = getChunk(chunkPosition);
+        if (chunk == null){
+            //TODO auf jedenfall fixen
+            return new StandardTile(0,0,0);
+        }else{
+            return chunk.getTile(position.minus(chunkPosition.times(32)));
+        }
+    }
+
+    public Chunk getChunk(IntVector chunkPosition){
+        return loadedChunks.get(chunkPosition);
+    }
+
 
     //Entity Stuff
     public void spawnEntity(Entity entity, Vector position) {
@@ -49,7 +67,9 @@ public class TileMap extends Actor implements ITileMap {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        loadedChunks.forEach(e -> e.draw(batch));
+        List<IntVector> chunkPositions = new ArrayList<>(loadedChunks.keySet());
+        chunkPositions.sort(Comparator.comparingInt(a -> -a.toScreenCoords().y));
+        chunkPositions.forEach(e -> loadedChunks.get(e).draw(batch));
         loadedEntities.forEach(e -> e.draw(batch));
     }
 
