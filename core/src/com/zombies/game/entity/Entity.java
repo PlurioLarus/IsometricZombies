@@ -92,8 +92,12 @@ public abstract class Entity implements IEntity {
 
     @Override
     public void cmdSetPosition(Vector vector) {
-        this.position = vector;
-        game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
+        if(!collides(vector)) {
+            this.position = vector;
+            game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
+        } else {
+            this.position = lastFixedPosition;
+        }
     }
 
     @Override
@@ -102,15 +106,19 @@ public abstract class Entity implements IEntity {
     }
 
     public void transformPosition(Vector vector) {
-        if(!collides(vector)) {
+        if(!collides(this.position.plus(vector))) {
             setPosition(this.position.plus(vector));
         }
     }
 
-    private boolean collides(Vector vector) {
-        Tile tile = game.getTileMap().getTile(this.position.plus(vector));
+    private boolean collides(Vector newPosition) {
+        Tile tile = game.getTileMap().getTile(newPosition);
         TileObject tileObject = tile.getTileObject();
-        return tileObject != null;
+        List<Entity> entities = game.getTileMap().getTile(newPosition).getEntities();
+        entities.remove(this);
+
+
+        return tileObject != null || !entities.isEmpty();
     }
 
     public int getID() {
