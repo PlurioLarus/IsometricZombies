@@ -32,11 +32,6 @@ public class Chunk {
         return tiles[relativeTilePos.x][relativeTilePos.y];
     }
 
-    public List<Entity> getEntitiesOnTile(IntVector tilePosition){
-        return game.getEntityManager().getLoadedEntities().stream()
-                .filter(e -> e.getPosition().roundToIntVector().equals(tilePosition))
-                .collect(Collectors.toList());
-    }
 
     public void draw(Batch batch) {
         //for (int x = 0; x < tiles.length; x++) {
@@ -56,7 +51,7 @@ public class Chunk {
                     batch.draw(tileObject.getTexture(), position.x - 16, position.y - 8 + tiles[x][y].height);
                 }
 
-                getEntitiesOnTile(chunkPosition.times(32).plus(new IntVector(x, y))).forEach(e-> e.draw(batch));
+                tiles[x][y].getEntities().forEach(e-> e.draw(batch));
             }
         }
     }
