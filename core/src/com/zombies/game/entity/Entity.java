@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.entity.behaviours.IBehaviour;
 import com.zombies.game.tile.Tile;
 import com.zombies.main.Game;
+import com.zombies.utils.Direction;
+import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
 import java.util.ArrayList;
@@ -63,6 +65,16 @@ public abstract class Entity implements IEntity {
 
     public Tile getTile(){
         return game.getTileMap().getTile(position);
+    }
+
+    public Direction getDirection(){
+        Vector lastMove = position.minus(lastPosition);
+        if (lastMove.x < 0){
+            return Direction.BOTTOM_LEFT;
+        }else if (lastMove.x > 0){
+            return Direction.BOTTOM_RIGHT;
+        }
+        return Direction.TOP_LEFT;
     }
 
     @Override

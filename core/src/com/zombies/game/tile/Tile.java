@@ -31,17 +31,22 @@ public abstract class Tile {
 
     public void setShadows(){
         World world = game.getWorld();
-        boolean rightFrontHigher = world.getHeight(position) < world.getHeight(position.minus(new IntVector(0,1)));
-        boolean leftFrontHigher = world.getHeight(position) < world.getHeight(position.minus(new IntVector(1,0)));
-        if(leftFrontHigher){
-            if(rightFrontHigher){
+        int rightFrontHigher = world.getHeight(position.minus(new IntVector(0,1))) - world.getHeight(position);
+        int leftFrontHigher = world.getHeight(position.minus(new IntVector(1,0))) - world.getHeight(position);
+        int rightShadow = rightFrontHigher > 0 ? (int)Math.min(rightFrontHigher/2.5, 3) : 0;
+        int leftShadow = leftFrontHigher > 0 ? (int)Math.min(leftFrontHigher/2.5, 3) : 0;
+        System.out.println(rightShadow + " : " +leftShadow);
+        shadow = TextureRegistry.get("shadow".concat(Integer.toString(rightShadow)).concat(Integer.toString(leftShadow)));
+/*
+        if(leftFrontHigher>0){
+            if(rightFrontHigher>0){
                 shadow = TextureRegistry.get("shadow");
             }else{
                 shadow = TextureRegistry.get("leftShadow");
             }
-        }else if (rightFrontHigher){
+        }else if (rightFrontHigher>0){
             shadow = TextureRegistry.get("rightShadow");
-        }
+        }*/
     }
 
     public TileObject getTileObject(){

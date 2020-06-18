@@ -51,11 +51,26 @@ public class Game extends Group {
                 }
             });
         } else {
-            TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
+            TextureRegistry.register("characterBL", new Texture("character/characterBL.png"));
+            TextureRegistry.register("characterBR", new Texture("character/characterBR.png"));
             TextureRegistry.register("fancyTile", new Texture("fancyTile.png"));
-            TextureRegistry.register("shadow", new Texture("shadow.png"));
-            TextureRegistry.register("leftShadow", new Texture("leftShadow.png"));
-            TextureRegistry.register("rightShadow", new Texture("rightShadow.png"));
+
+            TextureRegistry.register("shadow01", new Texture("shadows/shadow01.png"));
+            TextureRegistry.register("shadow02", new Texture("shadows/shadow02.png"));
+            TextureRegistry.register("shadow03", new Texture("shadows/shadow03.png"));
+            TextureRegistry.register("shadow10", new Texture("shadows/shadow10.png"));
+            TextureRegistry.register("shadow11", new Texture("shadows/shadow11.png"));
+            TextureRegistry.register("shadow12", new Texture("shadows/shadow12.png"));
+            TextureRegistry.register("shadow13", new Texture("shadows/shadow13.png"));
+            TextureRegistry.register("shadow20", new Texture("shadows/shadow20.png"));
+            TextureRegistry.register("shadow21", new Texture("shadows/shadow21.png"));
+            TextureRegistry.register("shadow22", new Texture("shadows/shadow22.png"));
+            TextureRegistry.register("shadow23", new Texture("shadows/shadow23.png"));
+            TextureRegistry.register("shadow30", new Texture("shadows/shadow30.png"));
+            TextureRegistry.register("shadow31", new Texture("shadows/shadow31.png"));
+            TextureRegistry.register("shadow32", new Texture("shadows/shadow32.png"));
+            TextureRegistry.register("shadow33", new Texture("shadows/shadow33.png"));
+
             TextureRegistry.register("tree", new Texture("tree.png"));
             TextureRegistry.register("fancyOtherTile", new Texture("fancyOtherTile.png"));
             networking = Networking.client("localhost", null);
