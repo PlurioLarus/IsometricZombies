@@ -6,45 +6,46 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.zombies.game.entity.EntityPlayer;
-import com.zombies.game.tile.Chunk;
+import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.game.entity.manager.EntityManager;
+import com.zombies.game.player.PlayerManager;
 import com.zombies.game.tile.ChunkLoader;
 import com.zombies.game.tile.TileMap;
 import com.zombies.networking.Networking;
 import com.zombies.rendering.TextureRegistry;
-import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Game extends Group {
     private final boolean isServer;
     public final OrthographicCamera camera;
     private Networking networking;
     private ChunkLoader chunkLoader;
+    private PlayerManager playerManager;
     private TileMap tileMap;
-    private final  List<EntityPlayer> players;
+    private EntityManager entityManager;
 
     public Game(boolean isServer, OrthographicCamera camera) throws IOException {
         this.isServer = isServer;
         this.camera = camera;
-        players = new ArrayList<>();
         initialize();
     }
 
     private void initialize() throws IOException {
         tileMap = new TileMap(this);
         chunkLoader = new ChunkLoader(this);
-
-
+        entityManager = new EntityManager(this);
+        playerManager = new PlayerManager(this);
         if (isServer) {
             networking = Networking.server(new Listener() {
                 @Override
                 public void connected(Connection connection) {
                     super.connected(connection);
-                    map.onClientConnected(connection);
+                    PlayerConnectedEvent event = new PlayerConnectedEvent(connection);
+                    entityManager.addEvent(event);
+                    tileMap.addEvent(event);
+                    playerManager.addEvent(event);
                 }
             });
         } else {
@@ -54,30 +55,30 @@ public class Game extends Group {
             networking = Networking.client("localhost", null);
         }
         networking.registerRemoteObject(TileMap.NET_ID, tileMap);
+        networking.registerRemoteObject(entityManager.getNetID(), entityManager);
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
         chunkLoader.update();
-        map.update(delta);
+        tileMap.update(delta);
+        entityManager.update(delta);
     }
 
     public void setCameraPosition(Vector screenPosition) {
         camera.position.set(screenPosition.x, screenPosition.y, 0);
     }
 
-    public List<EntityPlayer> getPlayers(){
-        return players;
-    }
 
-    public ChunkLoader getChunkLoader(){
+    public ChunkLoader getChunkLoader() {
         return chunkLoader;
     }
 
-    public TileMap getTileMap(){
+    public TileMap getTileMap() {
         return tileMap;
     }
+
     public Networking getNetworking() {
         return networking;
     }
@@ -85,15 +86,21 @@ public class Game extends Group {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        map.draw(batch);
+        tileMap.draw(batch);
+        entityManager.draw(batch);
     }
 
     public void fixedUpdate() {
-        map.fixedUpdate(0.05f);
+        tileMap.fixedUpdate(0.05f);
+        entityManager.fixedUpdate(0.05f);
+        playerManager.fixedUpdate();
     }
-    public void addPlayer(EntityPlayer player){
-        //TODO: @NOAH
-        //chunkLoader.loadSurroundingChunks(player.getPosition().toChunkPos());
-        players.add(player);
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

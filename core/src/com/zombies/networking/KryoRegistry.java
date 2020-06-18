@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.IEntity;
+import com.zombies.game.entity.manager.IEntityManager;
 import com.zombies.game.tile.ITileMap;
 import com.zombies.game.tile.TileMap;
 import com.zombies.utils.Vector;
@@ -20,6 +21,7 @@ public class KryoRegistry {
         kryo.register(Entity.class);
         kryo.register(EntityPlayer.class);
         kryo.register(INetworkedManager.class);
+        kryo.register(IEntityManager.class);
         kryo.register(ArrayList.class);
         kryo.register(Vector.class);
         ObjectSpace.registerClasses(kryo);

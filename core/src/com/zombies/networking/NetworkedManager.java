@@ -1,8 +1,6 @@
 package com.zombies.networking;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.Connection;
 import com.zombies.main.Game;
 
 import java.util.LinkedList;
@@ -19,10 +17,6 @@ public abstract class NetworkedManager implements INetworkedManager {
         this.netID = netID;
     }
 
-    public abstract void onClientConnected(Connection clientConnection);
-
-    public abstract void onClientDisconnected(Connection clientConnection);
-
     public void cmdOnEventReceived(Object event) {
         addEvent(event);
     }
@@ -38,13 +32,21 @@ public abstract class NetworkedManager implements INetworkedManager {
         }
     }
 
-    public abstract void registerKryoObjects(Kryo kryo);
-
     public abstract void update(float deltaTime);
 
     public abstract void draw(Batch batch);
 
-    public abstract void fixedUpdate(float fixedDeltaTime);
+    protected abstract void handleEvent(Object event);
 
+    public void fixedUpdate(float fixedDeltaTime) {
+        if (game.getNetworking().isServer()) {
+            while (!eventQueue.isEmpty()) {
+                handleEvent(eventQueue.poll());
+            }
+        }
+    }
 
+    public int getNetID() {
+        return netID;
+    }
 }

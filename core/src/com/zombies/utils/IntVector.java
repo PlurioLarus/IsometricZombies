@@ -5,6 +5,7 @@ import com.zombies.main.IsometricZombies;
 import java.util.Objects;
 
 public class IntVector {
+    public static IntVector zero = new IntVector(0, 0);
     public final int x, y;
 
     public IntVector(int x, int y) {
