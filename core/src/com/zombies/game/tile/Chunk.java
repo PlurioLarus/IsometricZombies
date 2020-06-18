@@ -19,7 +19,7 @@ public class Chunk {
         for (int x = 0; x < this.tiles.length; x++) {
             for (int y = 0; y < this.tiles[x].length; y++) {
                 int height = game.getWorld().getHeight(chunkPosition.times(32).plus(new IntVector(x,y)));
-                this.tiles[x][y] = new StandardTile(32*chunkPosition.x + x, 32*chunkPosition.y + y,height);
+                this.tiles[x][y] = new StandardTile(game,new IntVector(32*chunkPosition.x + x, 32*chunkPosition.y + y),height);
             }
         }
     }
@@ -34,7 +34,14 @@ public class Chunk {
             //for (int y = 0; y < this.tiles[x].length; y++) {
             for (int y = this.tiles[x].length-1; y >=0 ; y--) {
                 IntVector position = chunkPosition.times(32).plus(new IntVector(x, y)).toScreenCoords();
-                batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
+
+                if (tiles[x][y].isLowerAsFront()){
+                    batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
+                }else {
+                    batch.draw(this.tiles[x][y].texture, position.x - 16, position.y - 24 + tiles[x][y].height);
+                }
+
+
                 TileObject tileObject = this.tiles[x][y].getTileObject();
                 if (tileObject != null){
                     batch.draw(tileObject.getTexture(), position.x - 16, position.y - 8 + tiles[x][y].height);

@@ -38,7 +38,7 @@ public class TileMap extends Actor implements ITileMap {
         Chunk chunk = getChunk(chunkPosition);
         if (chunk == null){
             //TODO auf jedenfall fixen
-            return new StandardTile(0,0,0);
+            return new StandardTile(game,new IntVector(0,0),0);
         }else{
             return chunk.getTile(position.minus(chunkPosition.times(32)));
         }
