@@ -1,6 +1,7 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.zombies.events.PlayerConnectedEvent;
 import com.zombies.events.tilemap.ChunkLoadedEvent;
 import com.zombies.main.Game;
 import com.zombies.networking.NetworkedManager;
@@ -63,7 +64,9 @@ public class TileMap extends NetworkedManager implements ITileMap {
 
     @Override
     protected void handleServerEvent(Object event) {
-
+        if (event instanceof PlayerConnectedEvent) {
+            handlePlayerConnectedEvent((PlayerConnectedEvent) event);
+        }
     }
 
     @Override
@@ -71,6 +74,10 @@ public class TileMap extends NetworkedManager implements ITileMap {
         if (event instanceof ChunkLoadedEvent) {
             handleChunkLoadedEvent((ChunkLoadedEvent) event);
         }
+    }
+
+    private void handlePlayerConnectedEvent(PlayerConnectedEvent event) {
+        loadedChunks.forEach((a, b) -> sendEventToClient(new ChunkLoadedEvent(a), event.connection));
     }
 
     private void handleChunkLoadedEvent(ChunkLoadedEvent event) {
