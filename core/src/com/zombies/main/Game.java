@@ -49,7 +49,7 @@ public class Game extends Group {
         } else {
             TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
             TextureRegistry.register("fancyTile", new Texture("fancyTile.png"));
-            TextureRegistry.register("fancyTile2", new Texture("fancyTile2.png"));
+            TextureRegistry.register("tree", new Texture("tree.png"));
             TextureRegistry.register("fancyOtherTile", new Texture("fancyOtherTile.png"));
             networking = Networking.client("localhost", null);
             addActor(tileMap);
