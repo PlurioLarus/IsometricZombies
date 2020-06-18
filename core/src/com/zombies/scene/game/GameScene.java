@@ -12,12 +12,13 @@ import java.net.InetAddress;
 
 public class GameScene extends Scene {
 
+    float fixedDeltaTime = 0;
+    Game clientGame, serverGame;
 
     @Override
     public void initialize() {
         super.initialize();
 
-        Game clientGame = null, serverGame = null;
         EntityRegistry.register("player", EntityPlayer::new);
         try {
             Client client = new Client();
@@ -31,6 +32,21 @@ public class GameScene extends Scene {
         }
         stage.addActor(clientGame);
         camera.zoom = 0.5f;
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        fixedDeltaTime += deltaTime;
+        if (fixedDeltaTime >= 0.05f) {
+            fixedDeltaTime -= 0.05f;
+            if (clientGame != null) {
+                clientGame.fixedUpdate();
+            }
+            if (serverGame != null) {
+                serverGame.fixedUpdate();
+            }
+        }
     }
 
     public void setCameraPosition(Vector screenPosition) {

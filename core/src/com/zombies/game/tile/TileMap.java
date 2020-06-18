@@ -1,14 +1,15 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
+import com.zombies.events.PlayerConnectedEvent;
 import com.zombies.exceptions.ChunkAlreadyLoadedException;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.EntityRegistry;
 import com.zombies.main.Game;
-import com.zombies.networking.INetworkedManager;
+import com.zombies.networking.NetworkedManager;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class TileMap extends Actor implements ITileMap, INetworkedManager {
+public class TileMap extends NetworkedManager implements ITileMap {
 
     public static final int NET_ID = 1000000;
 
@@ -26,6 +27,7 @@ public class TileMap extends Actor implements ITileMap, INetworkedManager {
     List<Entity> loadedEntities = new ArrayList<>();
 
     public TileMap(Game game) {
+        super(game, NET_ID);
         this.game = game;
     }
 
@@ -46,14 +48,9 @@ public class TileMap extends Actor implements ITileMap, INetworkedManager {
         entity.setPosition(position);
     }
 
-    @Override
-    public void act(float delta) {
-        loadedEntities.forEach(e -> e.update(delta));
-    }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
+    public void draw(Batch batch) {
         loadedChunks.forEach(e -> e.draw(batch));
         loadedEntities.forEach(e -> e.draw(batch));
     }
@@ -95,8 +92,41 @@ public class TileMap extends Actor implements ITileMap, INetworkedManager {
 
     @Override
     public void onClientConnected(Connection clientConnection) {
-        ITileMap clientMap = game.getNetworking().getClientRemoteObject(NET_ID, clientConnection, ITileMap.class);
-        loadedEntities.forEach(e -> clientMap.rpcSpawnEntity(e.getID(), e.getIdentifier()));
-        spawnPlayer(clientConnection.getID());
+        System.out.println("[SERVER:RECEIVED] OnClientConnected");
+        addEvent(new PlayerConnectedEvent(clientConnection));
     }
+
+    @Override
+    public void onClientDisconnected(Connection clientConnection) {
+
+    }
+
+    @Override
+    public void registerKryoObjects(Kryo kryo) {
+
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        loadedEntities.forEach(e -> e.update(deltaTime));
+    }
+
+
+    @Override
+    public void fixedUpdate(float fixedDeltaTime) {
+        if (game.getNetworking().isClient()) return;
+        while (!eventQueue.isEmpty()) {
+            Object event = eventQueue.poll();
+            if (event instanceof PlayerConnectedEvent) {
+                handlePlayerConnected((PlayerConnectedEvent) event);
+            }
+        }
+    }
+
+    private void handlePlayerConnected(PlayerConnectedEvent event) {
+        ITileMap clientMap = game.getNetworking().getClientRemoteObject(NET_ID, event.connection, ITileMap.class);
+        loadedEntities.forEach(e -> clientMap.rpcSpawnEntity(e.getID(), e.getIdentifier()));
+        spawnPlayer(event.connection.getID());
+    }
+
 }

@@ -2,6 +2,7 @@ package com.zombies.main;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -41,13 +42,8 @@ public class Game extends Group {
         } else {
             TextureRegistry.register("fancy-char", new Texture("fancyCharacter.png"));
             networking = Networking.client("localhost", null);
-            addActor(map);
         }
         networking.registerRemoteObject(TileMap.NET_ID, map);
-    }
-
-    public void startServerGameLoop() {
-
     }
 
     public void setCameraPosition(Vector screenPosition) {
@@ -56,5 +52,22 @@ public class Game extends Group {
 
     public Networking getNetworking() {
         return networking;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        map.update(delta);
+    }
+
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        map.draw(batch);
+    }
+
+    public void fixedUpdate() {
+        map.fixedUpdate(0.05f);
     }
 }

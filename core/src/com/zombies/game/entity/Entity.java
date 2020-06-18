@@ -55,7 +55,6 @@ public abstract class Entity implements IEntity {
     public void setPosition(Vector position) {
         this.position = position;
         if (isLocalPlayer()) {
-            System.out.println("[LOCAL] Move to position " + position);
             game.getNetworking().getServerRemoteObject(netId, IEntity.class).cmdSetPosition(position);
         } else if (game.getNetworking().isServer()) {
             game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
