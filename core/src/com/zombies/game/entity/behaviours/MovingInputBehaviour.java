@@ -7,7 +7,7 @@ import com.zombies.utils.Vector;
 
 public class MovingInputBehaviour implements IBehaviour {
 
-    private static final float SPEED = 10;
+    private static final float SPEED = 6;
 
     @Override
     public void update(float deltaTime, Entity entity) {

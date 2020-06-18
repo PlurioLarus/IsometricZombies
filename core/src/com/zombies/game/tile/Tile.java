@@ -35,7 +35,6 @@ public abstract class Tile {
         int leftFrontHigher = world.getHeight(position.minus(new IntVector(1,0))) - world.getHeight(position);
         int rightShadow = rightFrontHigher > 0 ? (int)Math.min(rightFrontHigher/2.5, 3) : 0;
         int leftShadow = leftFrontHigher > 0 ? (int)Math.min(leftFrontHigher/2.5, 3) : 0;
-        System.out.println(rightShadow + " : " +leftShadow);
         shadow = TextureRegistry.get("shadow".concat(Integer.toString(rightShadow)).concat(Integer.toString(leftShadow)));
 /*
         if(leftFrontHigher>0){

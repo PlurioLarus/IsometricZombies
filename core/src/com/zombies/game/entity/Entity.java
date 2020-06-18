@@ -3,6 +3,7 @@ package com.zombies.game.entity;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.entity.behaviours.IBehaviour;
 import com.zombies.game.tile.Tile;
+import com.zombies.game.tile.objects.TileObject;
 import com.zombies.main.Game;
 import com.zombies.utils.Direction;
 import com.zombies.utils.IntVector;
@@ -101,7 +102,15 @@ public abstract class Entity implements IEntity {
     }
 
     public void transformPosition(Vector vector) {
-        setPosition(this.position.plus(vector));
+        if(!collides(vector)) {
+            setPosition(this.position.plus(vector));
+        }
+    }
+
+    private boolean collides(Vector vector) {
+        Tile tile = game.getTileMap().getTile(this.position.plus(vector));
+        TileObject tileObject = tile.getTileObject();
+        return tileObject != null;
     }
 
     public int getID() {
