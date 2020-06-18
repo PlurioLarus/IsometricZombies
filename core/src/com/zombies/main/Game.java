@@ -35,7 +35,7 @@ public class Game extends Group {
                 @Override
                 public void connected(Connection connection) {
                     super.connected(connection);
-                    map.spawnPlayer(connection.getID());
+                    map.onClientConnected(connection);
                 }
             });
         } else {

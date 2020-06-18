@@ -7,7 +7,7 @@ public interface ITileMap {
 
     void cmdSpawnEntity(Entity entity, Vector position);
 
-    void rpcSpawnEntity(int id, Entity entity);
+    void rpcSpawnEntity(int netId, String entityId);
 
     void rpcSpawnPlayer(int id, int localPlayer);
 

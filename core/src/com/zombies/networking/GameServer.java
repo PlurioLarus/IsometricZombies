@@ -15,13 +15,14 @@ public class GameServer {
     private final ObjectSpace objectSpace;
 
     public GameServer(Listener listener) throws IOException {
+
         server = new Server();
         server.start();
         KryoRegistry.apply(server.getKryo());
         objectSpace = new ObjectSpace();
         server.addListener(new GameServerListener(this));
         if (listener != null) server.addListener(listener);
-        server.bind(54555);
+        server.bind(54555, 54777);
     }
 
     public void registerRemoteObject(int id, Object object) {

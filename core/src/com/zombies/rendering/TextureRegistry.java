@@ -1,8 +1,6 @@
 package com.zombies.rendering;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.zombies.game.entity.Entity;
-import com.zombies.main.Game;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +15,6 @@ public class TextureRegistry {
 
     public static void register(String key, Texture texture) {
         textures.put(key, texture);
-    }
-
-    @FunctionalInterface
-    public static interface EntityCreator {
-        Entity create(Game game, boolean localPlayer, int netId);
     }
 
 }

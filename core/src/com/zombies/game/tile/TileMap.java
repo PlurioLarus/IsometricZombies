@@ -2,11 +2,13 @@ package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.esotericsoftware.kryonet.Connection;
 import com.zombies.exceptions.ChunkAlreadyLoadedException;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.EntityRegistry;
 import com.zombies.main.Game;
+import com.zombies.networking.INetworkedManager;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class TileMap extends Actor implements ITileMap {
+public class TileMap extends Actor implements ITileMap, INetworkedManager {
 
     public static final int NET_ID = 1000000;
 
@@ -65,14 +67,21 @@ public class TileMap extends Actor implements ITileMap {
     }
 
     @Override
-    public void rpcSpawnEntity(int id, Entity entity) {
-        /*loadedEntities.add(entity);*/
+    public void rpcSpawnEntity(int netId, String entityId) {
+        Entity e = EntityRegistry.<Entity>get(entityId, game, false, netId);
+        game.getNetworking().registerRemoteObject(netId, e);
+        loadedEntities.add(e);
     }
+
 
     public void spawnPlayer(int localPlayer) {
         System.out.println("[SERVER] Spawn Player");
-        List<ITileMap> tileMaps = game.getNetworking().getRemoteObjects(NET_ID, ITileMap.class);
-        tileMaps.forEach(t -> t.rpcSpawnPlayer(game.getNetworking().getNextRemoteObjectIndex(), localPlayer));
+        List<ITileMap> tileMaps = game.getNetworking().getClientRemoteObjects(NET_ID, ITileMap.class);
+        int netID = game.getNetworking().getNextRemoteObjectIndex();
+        tileMaps.forEach(t -> t.rpcSpawnPlayer(netID, localPlayer));
+        EntityPlayer playerEntity = EntityRegistry.<EntityPlayer>get("player", game, false, netID);
+        game.getNetworking().registerRemoteObject(netID, playerEntity);
+        loadedEntities.add(playerEntity);
     }
 
     @Override
@@ -82,5 +91,12 @@ public class TileMap extends Actor implements ITileMap {
         Entity e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, id);
         game.getNetworking().registerRemoteObject(id, e);
         loadedEntities.add(e);
+    }
+
+    @Override
+    public void onClientConnected(Connection clientConnection) {
+        ITileMap clientMap = game.getNetworking().getClientRemoteObject(NET_ID, clientConnection, ITileMap.class);
+        loadedEntities.forEach(e -> clientMap.rpcSpawnEntity(e.getID(), e.getIdentifier()));
+        spawnPlayer(clientConnection.getID());
     }
 }

@@ -8,7 +8,7 @@ import com.zombies.utils.Vector;
 public class EntityPlayer extends Entity {
 
     public EntityPlayer(Game game, boolean localPlayer, int id) {
-        super(game, localPlayer, id);
+        super(game, localPlayer, id, "player");
         registerBehaviour(new MovingInputBehaviour());
         if (game.getNetworking().isClient())
             registerBehaviour(new SpriteRenderBehaviour("fancy-char", new Vector(0.5f, 0)));

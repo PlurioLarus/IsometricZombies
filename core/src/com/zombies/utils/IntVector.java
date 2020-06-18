@@ -12,6 +12,11 @@ public class IntVector {
         this.y = y;
     }
 
+    public IntVector() {
+        this.x = 0;
+        this.y = 0;
+    }
+
     public IntVector plus(IntVector vector) {
         return new IntVector(this.x + vector.x, this.y + vector.y);
     }

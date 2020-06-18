@@ -14,16 +14,18 @@ public abstract class Entity implements IEntity {
 
     protected final Game game;
     private final boolean localPlayer;
-    private final int id;
+    private final int netId;
+    private final String identifier;
 
     public boolean isLocalPlayer() {
         return localPlayer;
     }
 
-    protected Entity(Game game, boolean localPlayer, int id) {
+    protected Entity(Game game, boolean localPlayer, int netId, String identifier) {
         this.game = game;
         this.localPlayer = localPlayer;
-        this.id = id;
+        this.netId = netId;
+        this.identifier = identifier;
     }
 
     protected void registerBehaviour(IBehaviour behaviour) {
@@ -42,6 +44,10 @@ public abstract class Entity implements IEntity {
         return position;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
     public Game getGame() {
         return game;
     }
@@ -49,16 +55,17 @@ public abstract class Entity implements IEntity {
     public void setPosition(Vector position) {
         this.position = position;
         if (isLocalPlayer()) {
-            // game.getNetworking().getRemoteObjects(id, IEntity.class).forEach(e -> e.cmdSetPosition(position));
+            System.out.println("[LOCAL] Move to position " + position);
+            game.getNetworking().getServerRemoteObject(netId, IEntity.class).cmdSetPosition(position);
         } else if (game.getNetworking().isServer()) {
-            // game.getNetworking().getRemoteObjects(id, IEntity.class).forEach(e -> e.rpcSetPosition(position));
+            game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
         }
     }
 
     @Override
     public void cmdSetPosition(Vector vector) {
         this.position = vector;
-        game.getNetworking().getRemoteObjects(id, IEntity.class).forEach(e -> e.rpcSetPosition(position));
+        game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
     }
 
     @Override
@@ -68,5 +75,9 @@ public abstract class Entity implements IEntity {
 
     public void transformPosition(Vector vector) {
         setPosition(this.position.plus(vector));
+    }
+
+    public int getID() {
+        return this.netId;
     }
 }

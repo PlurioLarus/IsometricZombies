@@ -19,7 +19,7 @@ public class GameClient {
         objectSpace = new ObjectSpace();
         client.addListener(new GameClientListener(this));
         if (listener != null) client.addListener(listener);
-        client.connect(5000, host, 54555);
+        client.connect(5000, host, 54555, 54777);
     }
 
     public void registerRemoteObject(int id, Object object) {
