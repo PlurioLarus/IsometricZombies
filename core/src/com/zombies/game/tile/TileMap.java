@@ -20,21 +20,18 @@ public class TileMap extends Actor implements ITileMap {
 
     final Game game;
 
-    List<Chunk> loadedChunks = new ArrayList<>();
-    List<Entity> loadedEntities = new ArrayList<>();
+    final List<Chunk> loadedChunks = new ArrayList<>();
+    final List<Entity> loadedEntities = new ArrayList<>();
 
     public TileMap(Game game) {
         this.game = game;
     }
 
-    public void loadChunk(IntVector chunkPos) {
-        if (loadedChunks.stream().anyMatch(e -> e.chunkPosition.equals(chunkPos))) {
-            throw new ChunkAlreadyLoadedException();
-        }
-        loadedChunks.add(new Chunk(chunkPos));
-        loadedChunks.sort(Comparator.comparingInt(a -> a.chunkPosition.toScreenCoords().y));
+    public List<Chunk> getLoadedChunks(){
+        return loadedChunks;
     }
 
+    //Entity Stuff
     public void spawnEntity(Entity entity, Vector position) {
         if (loadedEntities.contains(entity)) {
             //Maybe Throw an exception here
@@ -79,8 +76,9 @@ public class TileMap extends Actor implements ITileMap {
     public void rpcSpawnPlayer(int id, int localPlayer) {
         System.out.println("[CLIENT] Spawn Player");
         boolean spawnAsLocalPlayer = game.getNetworking().getID() == localPlayer;
-        Entity e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, id);
+        EntityPlayer e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, id);
         game.getNetworking().registerRemoteObject(id, e);
         loadedEntities.add(e);
+        game.addPlayer(e);
     }
 }
