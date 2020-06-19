@@ -1,7 +1,6 @@
 package com.zombies.game.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.game.entity.behaviours.IBehaviour;
 import com.zombies.game.tile.Tile;
 import com.zombies.game.tile.objects.TileObject;
@@ -44,11 +43,8 @@ public abstract class Entity implements IEntity {
     }
 
     public void fixedUpdate() {
-        Vector movement = position.minus(lastFixedPosition);
         lastFixedPosition = position;
-        if (this.isLocalPlayer()) {
-            game.getEntityManager().sendEventToServer(new PlayerMovedEvent(movement, netId));
-        }
+
     }
 
     public void draw(Batch batch) {

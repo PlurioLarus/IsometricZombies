@@ -44,7 +44,6 @@ public class ChunkLoader {
             IntVector playerChunk = p.getPosition().toChunkPos();
             int deltaX = playerChunk.x - p.getLastFixedPosition().toChunkPos().x;
             int deltaY = playerChunk.y - p.getLastFixedPosition().toChunkPos().y;
-            game.getLogger().printInfo("Diff " + p.getPosition() + " " + p.getLastFixedPosition());
             if (deltaX > 0) {
                 loadChunk(new IntVector(playerChunk.x + 1, playerChunk.y - 1));
                 loadChunk(new IntVector(playerChunk.x + 1, playerChunk.y));

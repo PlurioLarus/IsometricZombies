@@ -1,6 +1,7 @@
 package com.zombies.game.entity.behaviours;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.game.entity.Entity;
 import com.zombies.input.Input;
 import com.zombies.utils.Vector;
@@ -28,7 +29,7 @@ public class MovingInputBehaviour implements IBehaviour {
         movingVector = movingVector.normalize().times(deltaTime * SPEED);
         if (movingVector.getSquaredLength() == 0) return;
         entity.transformPosition(movingVector);
-        //entity.getGame().getEntityManager().sendEventToServer(new PlayerMovedEvent(movingVector, entity.getID()));
+        entity.getGame().getEntityManager().sendEventToServer(new PlayerMovedEvent(movingVector, entity.getID()));
     }
 
     @Override
