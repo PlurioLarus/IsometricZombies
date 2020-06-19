@@ -25,6 +25,16 @@ public class GameScene extends Scene {
             InetAddress address = client.discoverHost(54777, 5000);
             if (address == null) {
                 serverGame = new Game(true, camera);
+                new Thread(() -> {
+                    while (true) {
+                        serverGame.fixedUpdate();
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
             clientGame = new Game(false, camera);
         } catch (IOException e) {
@@ -43,9 +53,7 @@ public class GameScene extends Scene {
             if (clientGame != null) {
                 clientGame.fixedUpdate();
             }
-            if (serverGame != null) {
-                serverGame.fixedUpdate();
-            }
+
         }
     }
 

@@ -1,12 +1,12 @@
 package com.zombies.game.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.game.entity.behaviours.IBehaviour;
 import com.zombies.game.tile.Tile;
 import com.zombies.game.tile.objects.TileObject;
 import com.zombies.main.Game;
 import com.zombies.utils.Direction;
-import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
 import java.util.ArrayList;
@@ -44,7 +44,11 @@ public abstract class Entity implements IEntity {
     }
 
     public void fixedUpdate() {
+        Vector movement = position.minus(lastFixedPosition);
         lastFixedPosition = position;
+        if (this.isLocalPlayer()) {
+            game.getEntityManager().sendEventToServer(new PlayerMovedEvent(movement, netId));
+        }
     }
 
     public void draw(Batch batch) {
@@ -69,9 +73,7 @@ public abstract class Entity implements IEntity {
 
     public void setPosition(Vector position) {
         this.position = position;
-        if (isLocalPlayer()) {
-            game.getNetworking().getServerRemoteObject(netId, IEntity.class).cmdSetPosition(position);
-        } else if (game.getNetworking().isServer()) {
+        if (game.getNetworking().isServer()) {
             game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
         }
     }
@@ -80,11 +82,11 @@ public abstract class Entity implements IEntity {
         return game.getTileMap().getTile(position);
     }
 
-    public Direction getDirection(){
+    public Direction getDirection() {
         Vector lastMove = position.minus(lastPosition);
-        if (lastMove.x < 0){
+        if (lastMove.x < 0) {
             return Direction.BOTTOM_LEFT;
-        }else if (lastMove.x > 0){
+        } else if (lastMove.x > 0) {
             return Direction.BOTTOM_RIGHT;
         }
         return Direction.TOP_LEFT;
@@ -92,21 +94,24 @@ public abstract class Entity implements IEntity {
 
     @Override
     public void cmdSetPosition(Vector vector) {
-        if(!collides(vector)) {
+        /*if (!collides(vector)) {
             this.position = vector;
             game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
         } else {
             this.position = lastFixedPosition;
-        }
+        }*/
     }
 
     @Override
-    public void rpcSetPosition(Vector vector) {
-        this.position = vector;
+    public void rpcSetPosition(Vector position) {
+        game.getLogger().printEvent("Position");
+        if (!position.nearby(this.getPosition(), 0.1f)) {
+            setPosition(position);
+        }
     }
 
     public void transformPosition(Vector vector) {
-        if(!collides(this.position.plus(vector))) {
+        if (!collides(this.position.plus(vector))) {
             setPosition(this.position.plus(vector));
         }
     }

@@ -14,6 +14,7 @@ import com.zombies.game.tile.TileMap;
 import com.zombies.game.world.World;
 import com.zombies.networking.Networking;
 import com.zombies.rendering.TextureRegistry;
+import com.zombies.utils.Logger;
 import com.zombies.utils.Vector;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class Game extends Group {
     private PlayerManager playerManager;
     private TileMap tileMap;
     private EntityManager entityManager;
+    private final Logger logger;
 
     private final World world;
 
@@ -34,6 +36,7 @@ public class Game extends Group {
         this.camera = camera;
         world = new World();
         initialize();
+        logger = new Logger(this);
     }
 
     private void initialize() throws IOException {
@@ -97,6 +100,10 @@ public class Game extends Group {
         return chunkLoader;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     public TileMap getTileMap() {
         return tileMap;
     }
@@ -117,10 +124,11 @@ public class Game extends Group {
     }
 
     public void fixedUpdate() {
-        chunkLoader.fixedUpdate();
+
         tileMap.fixedUpdate(0.05f);
         entityManager.fixedUpdate(0.05f);
         playerManager.fixedUpdate();
+        chunkLoader.fixedUpdate();
     }
 
     public PlayerManager getPlayerManager() {

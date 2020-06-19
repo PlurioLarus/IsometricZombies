@@ -25,8 +25,10 @@ public class MovingInputBehaviour implements IBehaviour {
         if (Input.keyDown(Input.Keys.A)) {
             movingVector = movingVector.plus(new Vector(-1, 1));
         }
-        movingVector = movingVector.normalize();
-        entity.transformPosition(movingVector.times(deltaTime * SPEED));
+        movingVector = movingVector.normalize().times(deltaTime * SPEED);
+        if (movingVector.getSquaredLength() == 0) return;
+        entity.transformPosition(movingVector);
+        //entity.getGame().getEntityManager().sendEventToServer(new PlayerMovedEvent(movingVector, entity.getID()));
     }
 
     @Override

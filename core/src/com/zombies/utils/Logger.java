@@ -7,9 +7,9 @@ public class Logger {
 
     private final String prefix;
 
-    Logger(Game game) {
+    public Logger(Game game) {
         this.game = game;
-        if(game.isServer()) {
+        if (game.isServer()) {
             prefix = "[SERVER] ";
         } else {
             prefix = "[CLIENT] ";
@@ -25,7 +25,7 @@ public class Logger {
     }
 
     public void printWarning(String message) {
-        System.out.println("[!] " +prefix + message);
+        System.out.println("[!] " + prefix + message);
     }
 
 }

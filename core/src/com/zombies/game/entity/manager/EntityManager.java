@@ -2,6 +2,7 @@ package com.zombies.game.entity.manager;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.EntityRegistry;
@@ -59,8 +60,9 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
 
     @Override
     public void fixedUpdate(float fixedDeltaTime) {
+
+        loadedEntities.forEach(Entity::fixedUpdate);
         super.fixedUpdate(fixedDeltaTime);
-        loadedEntities.forEach(e -> e.fixedUpdate());
     }
 
     @Override
@@ -72,6 +74,18 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
     protected void handleServerEvent(Object event) {
         if (event instanceof PlayerConnectedEvent) {
             handlePlayerConnected((PlayerConnectedEvent) event);
+        } else if (event instanceof PlayerMovedEvent) {
+            handlePlayerMoved((PlayerMovedEvent) event);
+        }
+    }
+
+    private void handlePlayerMoved(PlayerMovedEvent event) {
+        //This is not very performant and should be removed in future releases TODO!
+        game.getLogger().printEvent("Moved " + event.deltaPosition);
+        for (int i = 0; i < loadedEntities.size(); i++) {
+            if (loadedEntities.get(i).getID() == event.entityPlayerNetId) {
+                loadedEntities.get(i).transformPosition(event.deltaPosition);
+            }
         }
     }
 
