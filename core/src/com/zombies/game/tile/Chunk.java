@@ -1,14 +1,19 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.zombies.game.entity.Entity;
 import com.zombies.game.tile.objects.TileObject;
 import com.zombies.main.Game;
 import com.zombies.main.IsometricZombies;
 import com.zombies.utils.IntVector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Chunk {
     private final Game game;
     public final IntVector chunkPosition;
+    private final List<Entity> chunkEntities;
 
     public final Tile[][] tiles;
 
@@ -22,14 +27,23 @@ public class Chunk {
                 this.tiles[x][y] = new StandardTile(game, new IntVector(IsometricZombies.CHUNK_SIZE * chunkPosition.x + x, IsometricZombies.CHUNK_SIZE * chunkPosition.y + y), height);
             }
         }
+        chunkEntities = new ArrayList<>();
     }
 
     public Tile getTile(IntVector relativeTilePos) {
         return tiles[relativeTilePos.x][relativeTilePos.y];
     }
 
+    public void addEntity(Entity entity) {
+        chunkEntities.add(entity);
+    }
+
+    public void removeEntity(Entity entity) {
+        chunkEntities.remove(entity);
+    }
 
     public void draw(Batch batch) {
+        //game.getLogger().printInfo("Entities on " + chunkPosition + ":" + chunkEntities.size());
         //for (int x = 0; x < tiles.length; x++) {
         for (int x = tiles.length - 1; x >= 0; x--) {
             //for (int y = 0; y < this.tiles[x].length; y++) {
@@ -46,8 +60,9 @@ public class Chunk {
                 if (tileObject != null) {
                     batch.draw(tileObject.getTexture(), position.x - 16, position.y - 8 + tiles[x][y].height);
                 }
-
-                tiles[x][y].getEntities().forEach(e -> e.draw(batch));
+                int finalX = x;
+                int finalY = y;
+                chunkEntities.stream().filter(e -> e.getPosition().roundToIntVector().toChunkOffset().equals(new IntVector(finalX, finalY))).forEach(e -> e.draw(batch));
             }
         }
     }

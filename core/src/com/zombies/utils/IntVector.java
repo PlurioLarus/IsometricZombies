@@ -30,6 +30,10 @@ public class IntVector {
         return new IntVector(this.x * multiplier, this.y * multiplier);
     }
 
+    public int getSquaredLength() {
+        return (x * x) + (y * y);
+    }
+
     /**
      * Converts to Screen Coords if this is a world coord!!!!
      *
@@ -43,6 +47,17 @@ public class IntVector {
 
     public IntVector toChunkPos() {
         return new IntVector((int) Math.floor((double) this.x / IsometricZombies.CHUNK_SIZE), (int) Math.floor((double) this.y / IsometricZombies.CHUNK_SIZE));
+    }
+
+    /**
+     * This Method transforms a worldposition vector to a position vector according to the chunk this vector points on
+     *
+     * @return
+     */
+    public IntVector toChunkOffset() {
+        int newX = this.x % IsometricZombies.CHUNK_SIZE;
+        int newY = this.y % IsometricZombies.CHUNK_SIZE;
+        return new IntVector(newX < 0 ? newX + IsometricZombies.CHUNK_SIZE : newX, newY < 0 ? newY + IsometricZombies.CHUNK_SIZE : newY);
     }
 
     @Override

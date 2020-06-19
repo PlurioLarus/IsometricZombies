@@ -2,17 +2,20 @@ package com.zombies.game.entity.manager;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.entitymanager.EntitySpawnedEvent;
 import com.zombies.events.entitymanager.PlayerMovedEvent;
+import com.zombies.events.entitymanager.PlayerSpawnedEvent;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.EntityRegistry;
 import com.zombies.main.Game;
 import com.zombies.networking.NetworkedManager;
+import com.zombies.utils.IntVector;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityManager extends NetworkedManager implements IEntityManager {
+public class EntityManager extends NetworkedManager {
 
     private static final int NET_ID = 230697;
 
@@ -28,29 +31,18 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
 
     public EntityPlayer spawnPlayer(int localPlayer) {
         System.out.println("[SERVER] Spawn Player");
-        List<IEntityManager> entityManagers = game.getNetworking().getClientRemoteObjects(NET_ID, IEntityManager.class);
         int netID = game.getNetworking().getNextRemoteObjectIndex();
-        entityManagers.forEach(t -> t.rpcSpawnPlayer(netID, localPlayer));
+        sendEventToClients(new PlayerSpawnedEvent(netID, localPlayer));
         EntityPlayer playerEntity = EntityRegistry.<EntityPlayer>get("player", game, false, netID);
         game.getNetworking().registerRemoteObject(netID, playerEntity);
         loadedEntities.add(playerEntity);
         return playerEntity;
     }
 
-    @Override
-    public void rpcSpawnPlayer(int id, int localPlayer) {
-        boolean spawnAsLocalPlayer = game.getNetworking().getID() == localPlayer;
-        System.out.println("[CLIENT] Spawn Player (" + spawnAsLocalPlayer + ")");
-        EntityPlayer e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, id);
-        game.getNetworking().registerRemoteObject(id, e);
-        loadedEntities.add(e);
-    }
-
-    @Override
-    public void rpcSpawnEntity(int netId, String entityId) {
-        Entity e = EntityRegistry.<Entity>get(entityId, game, false, netId);
-        game.getNetworking().registerRemoteObject(netId, e);
-        loadedEntities.add(e);
+    private void addEntity(Entity entity) {
+        IntVector chunk = entity.getPosition().toChunkPos();
+        game.getTileMap().getChunk(chunk).addEntity(entity);
+        loadedEntities.add(entity);
     }
 
     @Override
@@ -60,7 +52,17 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
 
     @Override
     public void fixedUpdate(float fixedDeltaTime) {
-
+        loadedEntities.forEach(e -> {
+            IntVector playerChunk = e.getPosition().toChunkPos();
+            int deltaX = playerChunk.x - e.getLastFixedPosition().toChunkPos().x;
+            int deltaY = playerChunk.y - e.getLastFixedPosition().toChunkPos().y;
+            if (deltaX != 0 || deltaY != 0) {
+                IntVector lastChunkPos = e.getLastFixedPosition().toChunkPos();
+                game.getLogger().printEvent("Entity Moved Chunk (" + lastChunkPos + " - " + playerChunk + ")");
+                game.getTileMap().getChunk(lastChunkPos).removeEntity(e);
+                game.getTileMap().getChunk(playerChunk).addEntity(e);
+            }
+        });
         loadedEntities.forEach(Entity::fixedUpdate);
         super.fixedUpdate(fixedDeltaTime);
     }
@@ -81,7 +83,7 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
 
     private void handlePlayerMoved(PlayerMovedEvent event) {
         //This is not very performant and should be removed in future releases TODO!
-        game.getLogger().printEvent("Moved " + event.deltaPosition);
+        //game.getLogger().printEvent("Moved " + event.deltaPosition);
         for (int i = 0; i < loadedEntities.size(); i++) {
             if (loadedEntities.get(i).getID() == event.entityPlayerNetId) {
                 loadedEntities.get(i).transformPosition(event.deltaPosition);
@@ -91,12 +93,30 @@ public class EntityManager extends NetworkedManager implements IEntityManager {
 
     @Override
     protected void handleClientEvent(Object event) {
+        if (event instanceof EntitySpawnedEvent) {
+            handleEntitySpawned((EntitySpawnedEvent) event);
+        } else if (event instanceof PlayerSpawnedEvent) {
+            handlePlayerSpawned((PlayerSpawnedEvent) event);
+        }
+    }
 
+    private void handlePlayerSpawned(PlayerSpawnedEvent event) {
+        boolean spawnAsLocalPlayer = game.getNetworking().getID() == event.localPlayerId;
+        System.out.println("[CLIENT] Spawn Player (" + spawnAsLocalPlayer + ")");
+        EntityPlayer e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, event.networkId);
+        game.getNetworking().registerRemoteObject(event.networkId, e);
+        addEntity(e);
+    }
+
+    private void handleEntitySpawned(EntitySpawnedEvent event) {
+        Entity e = EntityRegistry.<Entity>get(event.entityIdentifier, game, false, event.networkId);
+        game.getNetworking().registerRemoteObject(event.networkId, e);
+        e.setPosition(event.spawnPosition);
+        addEntity(e);
     }
 
     private void handlePlayerConnected(PlayerConnectedEvent event) {
-        IEntityManager clientMap = game.getNetworking().getClientRemoteObject(NET_ID, event.connection, IEntityManager.class);
-        loadedEntities.forEach(e -> clientMap.rpcSpawnEntity(e.getID(), e.getIdentifier()));
+        loadedEntities.forEach(e -> sendEventToClient(new EntitySpawnedEvent(e.getID(), e.getIdentifier(), e.getPosition()), event.connection));
     }
 
 

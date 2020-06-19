@@ -100,7 +100,6 @@ public abstract class Entity implements IEntity {
 
     @Override
     public void rpcSetPosition(Vector position) {
-        game.getLogger().printEvent("Position");
         if (!position.nearby(this.getPosition(), 0.1f)) {
             setPosition(position);
         }
@@ -115,11 +114,11 @@ public abstract class Entity implements IEntity {
     private boolean collides(Vector newPosition) {
         Tile tile = game.getTileMap().getTile(newPosition);
         TileObject tileObject = tile.getTileObject();
-        List<Entity> entities = game.getTileMap().getTile(newPosition).getEntities();
-        entities.remove(this);
+        //List<Entity> entities = game.getTileMap().getTile(newPosition).getEntities();
+        //entities.remove(this);
 
 
-        return tileObject != null || !entities.isEmpty();
+        return tileObject != null;// || !entities.isEmpty();
     }
 
     public int getID() {
