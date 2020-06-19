@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.events.PlayerConnectedEvent;
 import com.zombies.events.tilemap.ChunkLoadedEvent;
 import com.zombies.main.Game;
+import com.zombies.main.IsometricZombies;
 import com.zombies.networking.NetworkedManager;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
@@ -47,7 +48,7 @@ public class TileMap extends NetworkedManager implements ITileMap {
             //TODO auf jedenfall fixen
             return new StandardTile(game, new IntVector(0, 0), 0);
         } else {
-            return chunk.getTile(position.minus(chunkPosition.times(32)));
+            return chunk.getTile(position.minus(chunkPosition.times(IsometricZombies.CHUNK_SIZE)));
         }
     }
 

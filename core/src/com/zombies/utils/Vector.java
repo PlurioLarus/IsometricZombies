@@ -49,7 +49,7 @@ public class Vector {
      * @return
      */
     public IntVector toChunkPos() {
-        return new IntVector((int) Math.floor(this.x / 32), (int) Math.floor(this.y / 32));
+        return new IntVector((int) Math.floor(this.x / IsometricZombies.CHUNK_SIZE), (int) Math.floor(this.y / IsometricZombies.CHUNK_SIZE));
     }
 
     public float getLength() {
