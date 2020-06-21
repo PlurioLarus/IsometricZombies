@@ -1,6 +1,7 @@
 package com.zombies.game.player;
 
 import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.PlayerDisconnectedEvent;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.main.Game;
 import com.zombies.utils.IntVector;
@@ -41,6 +42,10 @@ public class PlayerManager {
             players.add(new Player(playerEvent.connection, player));
             game.getChunkLoader().loadSurroundingChunks(IntVector.zero);
 
+        } else if (event instanceof PlayerDisconnectedEvent) {
+            PlayerDisconnectedEvent playerEvent = (PlayerDisconnectedEvent) event;
+            game.getChunkLoader().unloadSurroundingChunks(playerEvent.player.getEntity().getPosition().toChunkPos());
+            players.remove(playerEvent.player);
         }
     }
 

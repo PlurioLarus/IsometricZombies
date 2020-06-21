@@ -70,6 +70,7 @@ public class Game extends Group {
                         getLogger().printEvent("Dispatching Disconnected Event");
                         PlayerDisconnectedEvent event = new PlayerDisconnectedEvent(player);
                         entityManager.addEvent(event);
+                        playerManager.addEvent(event);
                     }
                 }
             });

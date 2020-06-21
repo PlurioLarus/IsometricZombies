@@ -6,7 +6,7 @@ import com.zombies.events.entitymanager.EntityDespawnedEvent;
 import com.zombies.events.entitymanager.EntitySpawnedEvent;
 import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.events.entitymanager.PlayerSpawnedEvent;
-import com.zombies.events.tilemap.ChunkLoadedEvent;
+import com.zombies.events.tilemap.ChunkEvent;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.IEntity;
@@ -26,7 +26,7 @@ public class KryoRegistry {
         kryo.register(Entity.class);
         kryo.register(EntityPlayer.class);
         kryo.register(INetworkedManager.class);
-        kryo.register(ChunkLoadedEvent.class);
+        kryo.register(ChunkEvent.class);
         kryo.register(ArrayList.class);
         kryo.register(Vector.class);
         kryo.register(IntVector.class);
