@@ -2,6 +2,7 @@ package com.zombies.networking;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
+import com.zombies.events.entitymanager.EntityDespawnedEvent;
 import com.zombies.events.entitymanager.EntitySpawnedEvent;
 import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.events.entitymanager.PlayerSpawnedEvent;
@@ -32,6 +33,7 @@ public class KryoRegistry {
         kryo.register(PlayerMovedEvent.class);
         kryo.register(PlayerSpawnedEvent.class);
         kryo.register(EntitySpawnedEvent.class);
+        kryo.register(EntityDespawnedEvent.class);
         ObjectSpace.registerClasses(kryo);
     }
 

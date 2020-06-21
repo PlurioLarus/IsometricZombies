@@ -89,4 +89,11 @@ public class Networking {
         return object;
     }
 
+    public void removeRemoteObject(int networkID) {
+        if (isServer) {
+            server.removeRemoteObject(networkID);
+        } else {
+            client.removeRemoteObject(networkID);
+        }
+    }
 }

@@ -2,6 +2,8 @@ package com.zombies.game.entity.manager;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.PlayerDisconnectedEvent;
+import com.zombies.events.entitymanager.EntityDespawnedEvent;
 import com.zombies.events.entitymanager.EntitySpawnedEvent;
 import com.zombies.events.entitymanager.PlayerMovedEvent;
 import com.zombies.events.entitymanager.PlayerSpawnedEvent;
@@ -45,6 +47,12 @@ public class EntityManager extends NetworkedManager {
         loadedEntities.add(entity);
     }
 
+    private void removeEntity(Entity entity) {
+        IntVector chunk = entity.getPosition().toChunkPos();
+        game.getTileMap().getChunk(chunk).removeEntity(entity);
+        loadedEntities.remove(entity);
+    }
+
     @Override
     public void update(float deltaTime) {
         loadedEntities.forEach(e -> e.update(deltaTime));
@@ -78,7 +86,16 @@ public class EntityManager extends NetworkedManager {
             handlePlayerConnected((PlayerConnectedEvent) event);
         } else if (event instanceof PlayerMovedEvent) {
             handlePlayerMoved((PlayerMovedEvent) event);
+        } else if (event instanceof PlayerDisconnectedEvent) {
+            handlePlayerDisconnected((PlayerDisconnectedEvent) event);
         }
+    }
+
+    private void handlePlayerDisconnected(PlayerDisconnectedEvent event) {
+        int networkID = event.player.getEntity().getID();
+        removeEntity(event.player.getEntity());
+        game.getNetworking().removeRemoteObject(networkID);
+        sendEventToClients(new EntityDespawnedEvent(networkID));
     }
 
     private void handlePlayerMoved(PlayerMovedEvent event) {
@@ -97,7 +114,18 @@ public class EntityManager extends NetworkedManager {
             handleEntitySpawned((EntitySpawnedEvent) event);
         } else if (event instanceof PlayerSpawnedEvent) {
             handlePlayerSpawned((PlayerSpawnedEvent) event);
+        } else if (event instanceof EntityDespawnedEvent) {
+            handleEntityDespawned((EntityDespawnedEvent) event);
         }
+    }
+
+    private void handleEntityDespawned(EntityDespawnedEvent event) {
+        game.getLogger().printEvent("Entity despawned");
+        Entity entity = loadedEntities.stream().filter(e -> e.getID() == event.networkId).findAny().orElse(null);
+        if (entity != null) {
+            removeEntity(entity);
+        }
+        game.getNetworking().removeRemoteObject(event.networkId);
     }
 
     private void handlePlayerSpawned(PlayerSpawnedEvent event) {
@@ -116,7 +144,9 @@ public class EntityManager extends NetworkedManager {
     }
 
     private void handlePlayerConnected(PlayerConnectedEvent event) {
-        loadedEntities.forEach(e -> sendEventToClient(new EntitySpawnedEvent(e.getID(), e.getIdentifier(), e.getPosition()), event.connection));
+        loadedEntities.forEach(
+                e -> sendEventToClient(new EntitySpawnedEvent(e.getID(), e.getIdentifier(), e.getPosition()),
+                        event.connection));
     }
 
 

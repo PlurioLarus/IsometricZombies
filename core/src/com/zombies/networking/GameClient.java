@@ -18,7 +18,9 @@ public class GameClient {
         KryoRegistry.apply(client.getKryo());
         objectSpace = new ObjectSpace();
         client.addListener(new GameClientListener(this));
-        if (listener != null) client.addListener(listener);
+        if (listener != null) {
+            client.addListener(listener);
+        }
         client.connect(5000, host, 54555, 54777);
     }
 
@@ -34,6 +36,10 @@ public class GameClient {
 
     public int getID() {
         return client.getID();
+    }
+
+    public void removeRemoteObject(int networkID) {
+        objectSpace.remove(networkID);
     }
 
     static class GameClientListener extends Listener {

@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.PlayerDisconnectedEvent;
 import com.zombies.game.entity.manager.EntityManager;
+import com.zombies.game.player.Player;
 import com.zombies.game.player.PlayerManager;
 import com.zombies.game.tile.ChunkLoader;
 import com.zombies.game.tile.TileMap;
@@ -53,6 +55,22 @@ public class Game extends Group {
                     entityManager.addEvent(event);
                     tileMap.addEvent(event);
                     playerManager.addEvent(event);
+                }
+
+                @Override
+                public void disconnected(Connection connection) {
+                    super.disconnected(connection);
+                    Player player = playerManager.getPlayers()
+                            .stream()
+                            .filter(e -> e.connection.equals(connection))
+                            .findAny()
+                            .orElse(null);
+                    getLogger().printEvent("Connection was Closed");
+                    if (player != null) {
+                        getLogger().printEvent("Dispatching Disconnected Event");
+                        PlayerDisconnectedEvent event = new PlayerDisconnectedEvent(player);
+                        entityManager.addEvent(event);
+                    }
                 }
             });
         } else {
