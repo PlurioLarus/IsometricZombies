@@ -7,13 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.PlayerDisconnectedEvent;
 import com.zombies.game.entity.manager.EntityManager;
+import com.zombies.game.player.Player;
 import com.zombies.game.player.PlayerManager;
 import com.zombies.game.tile.ChunkLoader;
 import com.zombies.game.tile.TileMap;
 import com.zombies.game.world.World;
 import com.zombies.networking.Networking;
 import com.zombies.rendering.TextureRegistry;
+import com.zombies.utils.Logger;
 import com.zombies.utils.Vector;
 
 import java.io.IOException;
@@ -26,6 +29,7 @@ public class Game extends Group {
     private PlayerManager playerManager;
     private TileMap tileMap;
     private EntityManager entityManager;
+    private final Logger logger;
 
     private final World world;
 
@@ -34,6 +38,7 @@ public class Game extends Group {
         this.camera = camera;
         world = new World();
         initialize();
+        logger = new Logger(this);
     }
 
     private void initialize() throws IOException {
@@ -50,6 +55,23 @@ public class Game extends Group {
                     entityManager.addEvent(event);
                     tileMap.addEvent(event);
                     playerManager.addEvent(event);
+                }
+
+                @Override
+                public void disconnected(Connection connection) {
+                    super.disconnected(connection);
+                    Player player = playerManager.getPlayers()
+                            .stream()
+                            .filter(e -> e.connection.equals(connection))
+                            .findAny()
+                            .orElse(null);
+                    getLogger().printEvent("Connection was Closed");
+                    if (player != null) {
+                        getLogger().printEvent("Dispatching Disconnected Event");
+                        PlayerDisconnectedEvent event = new PlayerDisconnectedEvent(player);
+                        entityManager.addEvent(event);
+                        playerManager.addEvent(event);
+                    }
                 }
             });
         } else {
@@ -96,6 +118,10 @@ public class Game extends Group {
         return chunkLoader;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     public TileMap getTileMap() {
         return tileMap;
     }
@@ -116,10 +142,11 @@ public class Game extends Group {
     }
 
     public void fixedUpdate() {
-        chunkLoader.fixedUpdate();
+
         tileMap.fixedUpdate(0.05f);
         entityManager.fixedUpdate(0.05f);
         playerManager.fixedUpdate();
+        chunkLoader.fixedUpdate();
     }
 
     public PlayerManager getPlayerManager() {

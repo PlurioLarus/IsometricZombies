@@ -1,11 +1,11 @@
 package com.zombies.events;
 
-import com.esotericsoftware.kryonet.Connection;
+import com.zombies.game.player.Player;
 
 public class PlayerDisconnectedEvent {
-    public final Connection connection;
+    public final Player player;
 
-    public PlayerDisconnectedEvent(Connection connection) {
-        this.connection = connection;
+    public PlayerDisconnectedEvent(Player player) {
+        this.player = player;
     }
 }

@@ -45,10 +45,11 @@ public class Vector {
 
     /**
      * TODO: check round of this.x/this.y relative to their tile
+     *
      * @return
      */
-    public IntVector toChunkPos(){
-        return new IntVector((int)Math.floor(this.x/32), (int) Math.floor(this.y/32));
+    public IntVector toChunkPos() {
+        return new IntVector((int) Math.floor(this.x / IsometricZombies.CHUNK_SIZE), (int) Math.floor(this.y / IsometricZombies.CHUNK_SIZE));
     }
 
     public float getLength() {
@@ -63,7 +64,7 @@ public class Vector {
         return new Vector(x / length, y / length);
     }
 
-    public IntVector roundToIntVector(){
+    public IntVector roundToIntVector() {
         return new IntVector(Math.round(this.x), Math.round(this.y));
     }
 
@@ -87,5 +88,13 @@ public class Vector {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    public float getSquaredLength() {
+        return (x * x) + (y * y);
+    }
+
+    public boolean nearby(Vector other, float maxSquaredDistance) {
+        return this.minus(other).getSquaredLength() < maxSquaredDistance;
     }
 }

@@ -1,6 +1,7 @@
 package com.zombies.networking;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.esotericsoftware.kryonet.Connection;
 import com.zombies.main.Game;
 
 import java.util.LinkedList;
@@ -34,6 +35,11 @@ public abstract class NetworkedManager implements INetworkedManager {
     public void sendEventToClients(Object event) {
         List<INetworkedManager> managers = game.getNetworking().getClientRemoteObjects(netID, INetworkedManager.class);
         managers.forEach(m -> m.rpcOnEventReceived(event));
+    }
+
+    public void sendEventToClient(Object event, Connection connection) {
+        INetworkedManager manager = game.getNetworking().getClientRemoteObject(netID, connection, INetworkedManager.class);
+        manager.rpcOnEventReceived(event);
     }
 
     public synchronized void addEvent(Object event) {

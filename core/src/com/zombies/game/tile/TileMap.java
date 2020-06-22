@@ -1,8 +1,10 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.zombies.events.tilemap.ChunkLoadedEvent;
+import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.tilemap.ChunkEvent;
 import com.zombies.main.Game;
+import com.zombies.main.IsometricZombies;
 import com.zombies.networking.NetworkedManager;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
@@ -27,7 +29,15 @@ public class TileMap extends NetworkedManager implements ITileMap {
         if (game.getNetworking().isServer()) {
             System.out.println("[SERVER] Loaded Chunk " + chunkPosition);
             loadedChunks.put(chunkPosition, new Chunk(game, chunkPosition));
-            sendEventToClients(new ChunkLoadedEvent(chunkPosition));
+            sendEventToClients(new ChunkEvent(chunkPosition, true));
+        }
+    }
+
+    public void unloadChunk(IntVector chunkPos) {
+        if (game.getNetworking().isServer()) {
+            game.getLogger().printEvent("Unloaded Chunk " + chunkPos);
+            loadedChunks.remove(chunkPos);
+            sendEventToClients(new ChunkEvent(chunkPos, false));
         }
     }
 
@@ -46,7 +56,7 @@ public class TileMap extends NetworkedManager implements ITileMap {
             //TODO auf jedenfall fixen
             return new StandardTile(game, new IntVector(0, 0), 0);
         } else {
-            return chunk.getTile(position.minus(chunkPosition.times(32)));
+            return chunk.getTile(position.minus(chunkPosition.times(IsometricZombies.CHUNK_SIZE)));
         }
     }
 
@@ -63,19 +73,30 @@ public class TileMap extends NetworkedManager implements ITileMap {
 
     @Override
     protected void handleServerEvent(Object event) {
-
+        if (event instanceof PlayerConnectedEvent) {
+            handlePlayerConnectedEvent((PlayerConnectedEvent) event);
+        }
     }
 
     @Override
     protected void handleClientEvent(Object event) {
-        if (event instanceof ChunkLoadedEvent) {
-            handleChunkLoadedEvent((ChunkLoadedEvent) event);
+        if (event instanceof ChunkEvent) {
+            handleChunkEvent((ChunkEvent) event);
         }
     }
 
-    private void handleChunkLoadedEvent(ChunkLoadedEvent event) {
-        System.out.println("[CLIENT] Loaded Chunk " + event.chunkPosition);
-        loadedChunks.put(event.chunkPosition, new Chunk(game, event.chunkPosition));
+    private void handlePlayerConnectedEvent(PlayerConnectedEvent event) {
+        loadedChunks.forEach((a, b) -> sendEventToClient(new ChunkEvent(a, true), event.connection));
+    }
+
+    private void handleChunkEvent(ChunkEvent event) {
+        game.getLogger().printEvent("Chunk changed " + event.chunkPosition);
+        if (event.loadedEvent) {
+            loadedChunks.put(event.chunkPosition, new Chunk(game, event.chunkPosition));
+        } else {
+            loadedChunks.remove(event.chunkPosition);
+        }
+
     }
 
     @Override
@@ -87,4 +108,6 @@ public class TileMap extends NetworkedManager implements ITileMap {
     public void rpcLoadChunk(IntVector position) {
 
     }
+
+
 }
