@@ -3,13 +3,15 @@ package com.zombies.game.tile;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.events.PlayerConnectedEvent;
 import com.zombies.events.tilemap.ChunkEvent;
+import com.zombies.game.entity.Entity;
 import com.zombies.main.Game;
-import com.zombies.main.IsometricZombies;
 import com.zombies.networking.NetworkedManager;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
 import java.util.*;
+
+import static com.zombies.main.IsometricZombies.CHUNK_SIZE;
 
 
 public class TileMap extends NetworkedManager implements ITileMap {
@@ -27,7 +29,6 @@ public class TileMap extends NetworkedManager implements ITileMap {
 
     public void loadChunk(IntVector chunkPosition) {
         if (game.getNetworking().isServer()) {
-            System.out.println("[SERVER] Loaded Chunk " + chunkPosition);
             loadedChunks.put(chunkPosition, new Chunk(game, chunkPosition));
             sendEventToClients(new ChunkEvent(chunkPosition, true));
         }
@@ -35,7 +36,6 @@ public class TileMap extends NetworkedManager implements ITileMap {
 
     public void unloadChunk(IntVector chunkPos) {
         if (game.getNetworking().isServer()) {
-            game.getLogger().printEvent("Unloaded Chunk " + chunkPos);
             loadedChunks.remove(chunkPos);
             sendEventToClients(new ChunkEvent(chunkPos, false));
         }
@@ -56,12 +56,22 @@ public class TileMap extends NetworkedManager implements ITileMap {
             //TODO auf jedenfall fixen
             return new StandardTile(game, new IntVector(0, 0), 0);
         } else {
-            return chunk.getTile(position.minus(chunkPosition.times(IsometricZombies.CHUNK_SIZE)));
+            return chunk.getTile(position.minus(chunkPosition.times(CHUNK_SIZE)));
         }
     }
 
     public Chunk getChunk(IntVector chunkPosition) {
         return loadedChunks.get(chunkPosition);
+    }
+
+    public void addEntityToTile(Entity entity, IntVector vector) {
+        IntVector chunk = vector.toChunkPos();
+        getChunk(chunk).addEntity(entity, vector.minus(chunk.times(CHUNK_SIZE)));
+    }
+
+    public void removeEntityFromTile(Entity entity, IntVector position) {
+        IntVector chunk = position.toChunkPos();
+        getChunk(chunk).removeEntity(entity, position.minus(chunk.times(CHUNK_SIZE)));
     }
 
     @Override
@@ -90,7 +100,6 @@ public class TileMap extends NetworkedManager implements ITileMap {
     }
 
     private void handleChunkEvent(ChunkEvent event) {
-        game.getLogger().printEvent("Chunk changed " + event.chunkPosition);
         if (event.loadedEvent) {
             loadedChunks.put(event.chunkPosition, new Chunk(game, event.chunkPosition));
         } else {

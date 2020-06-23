@@ -5,6 +5,7 @@ import com.zombies.game.entity.behaviours.IBehaviour;
 import com.zombies.game.tile.Tile;
 import com.zombies.game.tile.objects.TileObject;
 import com.zombies.main.Game;
+import com.zombies.utils.Box;
 import com.zombies.utils.Direction;
 import com.zombies.utils.Vector;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Entity implements IEntity {
-    protected Vector position = new Vector(0, 0);
+    protected Box box;
     protected Vector lastPosition = new Vector(0, 0);
     protected Vector lastFixedPosition = new Vector(0, 0);
     protected List<IBehaviour> behaviours = new ArrayList<>();
@@ -26,11 +27,12 @@ public abstract class Entity implements IEntity {
         return localPlayer;
     }
 
-    protected Entity(Game game, boolean localPlayer, int netId, String identifier) {
+    protected Entity(Game game, boolean localPlayer, int netId, String identifier, Vector size) {
         this.game = game;
         this.localPlayer = localPlayer;
         this.netId = netId;
         this.identifier = identifier;
+        this.box = new Box(Vector.zero, size);
     }
 
     protected void registerBehaviour(IBehaviour behaviour) {
@@ -38,12 +40,12 @@ public abstract class Entity implements IEntity {
     }
 
     public void update(float deltaTime) {
-        lastPosition = position;
+        lastPosition = box.position;
         behaviours.forEach(b -> b.update(deltaTime, this));
     }
 
     public void fixedUpdate() {
-        lastFixedPosition = position;
+        lastFixedPosition = box.position;
 
     }
 
@@ -52,7 +54,15 @@ public abstract class Entity implements IEntity {
     }
 
     public Vector getPosition() {
-        return position;
+        return box.position;
+    }
+
+    public Box getBox() {
+        return box;
+    }
+
+    public Box getLastFixedBox() {
+        return box.withPosition(lastFixedPosition);
     }
 
     public Vector getLastPosition() {
@@ -68,18 +78,18 @@ public abstract class Entity implements IEntity {
     }
 
     public void setPosition(Vector position) {
-        this.position = position;
+        this.box = this.box.withPosition(position);
         if (game.getNetworking().isServer()) {
             game.getNetworking().getClientRemoteObjects(netId, IEntity.class).forEach(e -> e.rpcSetPosition(position));
         }
     }
 
     public Tile getTile() {
-        return game.getTileMap().getTile(position);
+        return game.getTileMap().getTile(box.position);
     }
 
     public Direction getDirection() {
-        Vector lastMove = position.minus(lastPosition);
+        Vector lastMove = box.position.minus(lastPosition);
         if (lastMove.x < 0) {
             return Direction.BOTTOM_LEFT;
         } else if (lastMove.x > 0) {
@@ -106,8 +116,8 @@ public abstract class Entity implements IEntity {
     }
 
     public void transformPosition(Vector vector) {
-        if (!collides(this.position.plus(vector))) {
-            setPosition(this.position.plus(vector));
+        if (!collides(this.box.position.plus(vector))) {
+            setPosition(this.box.position.plus(vector));
         }
     }
 
