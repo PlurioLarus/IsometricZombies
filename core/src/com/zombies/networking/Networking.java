@@ -1,11 +1,12 @@
 package com.zombies.networking;
 
+import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.rmi.ObjectSpace;
+import com.esotericsoftware.kryonet.rmi.RemoteObject;
 import com.zombies.exceptions.WrongNetworkTypeException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Networking {
@@ -64,14 +65,35 @@ public class Networking {
         }
     }
 
-    public <T> List<T> getRemoteObjects(int id, Class<T> inface) {
+    public <T> List<T> getClientRemoteObjects(int id, Class<T> inface) {
         if (isServer) {
             assert server != null;
             return server.getRemoteObjects(id, inface);
         } else {
-            assert client != null;
-            return new ArrayList<T>(Collections.singleton(client.getRemoteObject(id, inface)));
+            throw new WrongNetworkTypeException();
         }
     }
 
+    public <T> T getServerRemoteObject(int id, Class<T> inface) {
+        if (isServer) {
+            throw new WrongNetworkTypeException();
+        } else {
+            assert client != null;
+            return client.getRemoteObject(id, inface);
+        }
+    }
+
+    public <T> T getClientRemoteObject(int id, Connection connection, Class<T> inface) {
+        T object = ObjectSpace.getRemoteObject(connection, id, inface);
+        ((RemoteObject) object).setNonBlocking(true);
+        return object;
+    }
+
+    public void removeRemoteObject(int networkID) {
+        if (isServer) {
+            server.removeRemoteObject(networkID);
+        } else {
+            client.removeRemoteObject(networkID);
+        }
+    }
 }

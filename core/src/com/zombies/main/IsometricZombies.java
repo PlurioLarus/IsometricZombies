@@ -9,6 +9,7 @@ import com.zombies.scene.manager.SceneManager;
 
 public class IsometricZombies extends ApplicationAdapter {
     public static final int TILE_SIZE = 32;
+    public static final int CHUNK_SIZE = 16;
     SceneManager sM;
 
 
@@ -21,7 +22,8 @@ public class IsometricZombies extends ApplicationAdapter {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        //Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.gl.glClearColor(150f / 255, 100f / 255, 50f / 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         sM.update();

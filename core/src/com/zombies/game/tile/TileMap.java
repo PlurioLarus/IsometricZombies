@@ -1,84 +1,126 @@
 package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.zombies.exceptions.ChunkAlreadyLoadedException;
+import com.zombies.events.PlayerConnectedEvent;
+import com.zombies.events.tilemap.ChunkEvent;
 import com.zombies.game.entity.Entity;
-import com.zombies.game.entity.EntityPlayer;
-import com.zombies.game.entity.EntityRegistry;
 import com.zombies.main.Game;
+import com.zombies.networking.NetworkedManager;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
-public class TileMap extends Actor implements ITileMap {
+import static com.zombies.main.IsometricZombies.CHUNK_SIZE;
+
+
+public class TileMap extends NetworkedManager implements ITileMap {
 
     public static final int NET_ID = 1000000;
 
     final Game game;
 
-    final List<Chunk> loadedChunks = new ArrayList<>();
-    final List<Entity> loadedEntities = new ArrayList<>();
+    final Map<IntVector, Chunk> loadedChunks = new HashMap<>();
 
     public TileMap(Game game) {
+        super(game, NET_ID);
         this.game = game;
     }
 
-    public List<Chunk> getLoadedChunks(){
+    public void loadChunk(IntVector chunkPosition) {
+        if (game.getNetworking().isServer()) {
+            loadedChunks.put(chunkPosition, new Chunk(game, chunkPosition));
+            sendEventToClients(new ChunkEvent(chunkPosition, true));
+        }
+    }
+
+    public void unloadChunk(IntVector chunkPos) {
+        if (game.getNetworking().isServer()) {
+            loadedChunks.remove(chunkPos);
+            sendEventToClients(new ChunkEvent(chunkPos, false));
+        }
+    }
+
+    public Map<IntVector, Chunk> getLoadedChunks() {
         return loadedChunks;
     }
 
-    //Entity Stuff
-    public void spawnEntity(Entity entity, Vector position) {
-        if (loadedEntities.contains(entity)) {
-            //Maybe Throw an exception here
-            return;
+    public Tile getTile(Vector position) {
+        return getTile(position.roundToIntVector());
+    }
+
+    public Tile getTile(IntVector position) {
+        IntVector chunkPosition = position.toChunkPos();
+        Chunk chunk = getChunk(chunkPosition);
+        if (chunk == null) {
+            //TODO auf jedenfall fixen
+            return new StandardTile(game, new IntVector(0, 0), 0);
+        } else {
+            return chunk.getTile(position.minus(chunkPosition.times(CHUNK_SIZE)));
         }
-        loadedEntities.add(entity);
-        entity.setPosition(position);
+    }
+
+    public Chunk getChunk(IntVector chunkPosition) {
+        return loadedChunks.get(chunkPosition);
+    }
+
+    public void addEntityToTile(Entity entity, IntVector vector) {
+        IntVector chunk = vector.toChunkPos();
+        getChunk(chunk).addEntity(entity, vector.minus(chunk.times(CHUNK_SIZE)));
+    }
+
+    public void removeEntityFromTile(Entity entity, IntVector position) {
+        IntVector chunk = position.toChunkPos();
+        getChunk(chunk).removeEntity(entity, position.minus(chunk.times(CHUNK_SIZE)));
     }
 
     @Override
-    public void act(float delta) {
-        loadedEntities.forEach(e -> e.update(delta));
+    public void draw(Batch batch) {
+        List<IntVector> chunkPositions = new ArrayList<>(loadedChunks.keySet());
+        chunkPositions.sort(Comparator.comparingInt(a -> -a.toScreenCoords().y));
+        chunkPositions.forEach(e -> loadedChunks.get(e).draw(batch));
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-        loadedChunks.forEach(e -> e.draw(batch));
-        loadedEntities.forEach(e -> e.draw(batch));
+    protected void handleServerEvent(Object event) {
+        if (event instanceof PlayerConnectedEvent) {
+            handlePlayerConnectedEvent((PlayerConnectedEvent) event);
+        }
     }
 
     @Override
-    public void cmdSpawnEntity(Entity entity, Vector position) {
-        /*loadedEntities.add(entity);
-        entity.setPosition(position);
-        List<ITileMap> tileMaps = game.getNetworking().getRemoteObjects(NET_ID, ITileMap.class);
-        tileMaps.forEach(t -> rpcSpawnEntity(0, entity));*/
+    protected void handleClientEvent(Object event) {
+        if (event instanceof ChunkEvent) {
+            handleChunkEvent((ChunkEvent) event);
+        }
+    }
+
+    private void handlePlayerConnectedEvent(PlayerConnectedEvent event) {
+        loadedChunks.forEach((a, b) -> sendEventToClient(new ChunkEvent(a, true), event.connection));
+    }
+
+    private void handleChunkEvent(ChunkEvent event) {
+        if (event.loadedEvent) {
+            loadedChunks.put(event.chunkPosition, new Chunk(game, event.chunkPosition));
+        } else {
+            loadedChunks.remove(event.chunkPosition);
+        }
+
     }
 
     @Override
-    public void rpcSpawnEntity(int id, Entity entity) {
-        /*loadedEntities.add(entity);*/
+    public void update(float deltaTime) {
     }
 
-    public void spawnPlayer(int localPlayer) {
-        System.out.println("[SERVER] Spawn Player");
-        List<ITileMap> tileMaps = game.getNetworking().getRemoteObjects(NET_ID, ITileMap.class);
-        tileMaps.forEach(t -> t.rpcSpawnPlayer(game.getNetworking().getNextRemoteObjectIndex(), localPlayer));
-    }
 
     @Override
-    public void rpcSpawnPlayer(int id, int localPlayer) {
-        System.out.println("[CLIENT] Spawn Player");
-        boolean spawnAsLocalPlayer = game.getNetworking().getID() == localPlayer;
-        EntityPlayer e = EntityRegistry.<EntityPlayer>get("player", game, spawnAsLocalPlayer, id);
-        game.getNetworking().registerRemoteObject(id, e);
-        loadedEntities.add(e);
-        game.addPlayer(e);
+    public void rpcLoadChunk(IntVector position) {
+
+    }
+
+
+    public List<Entity> getEntitiesOnTile(IntVector tilePos) {
+        IntVector chunk = tilePos.toChunkPos();
+        return getChunk(chunk).getEntitiesOnTile(tilePos.minus(chunk.times(CHUNK_SIZE)));
     }
 }
