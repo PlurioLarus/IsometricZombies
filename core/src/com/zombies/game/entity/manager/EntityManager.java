@@ -12,7 +12,9 @@ import com.zombies.game.entity.EntityPlayer;
 import com.zombies.game.entity.EntityRegistry;
 import com.zombies.main.Game;
 import com.zombies.networking.NetworkedManager;
+import com.zombies.utils.Box;
 import com.zombies.utils.IntVector;
+import com.zombies.utils.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,14 +44,22 @@ public class EntityManager extends NetworkedManager {
     }
 
     private void addEntity(Entity entity) {
-        IntVector chunk = entity.getPosition().toChunkPos();
-        game.getTileMap().getChunk(chunk).addEntity(entity);
+        Box box = entity.getBox();
+        for (int x = Math.round(box.getLeft()); x <= Math.round(box.getRight()); x++) {
+            for (int y = Math.round(box.getBottom()); y <= Math.round(box.getTop()); y++) {
+                game.getTileMap().removeEntityFromTile(entity, new IntVector(x, y));
+            }
+        }
         loadedEntities.add(entity);
     }
 
     private void removeEntity(Entity entity) {
-        IntVector chunk = entity.getPosition().toChunkPos();
-        game.getTileMap().getChunk(chunk).removeEntity(entity);
+        Box box = entity.getBox();
+        for (int x = Math.round(box.getLeft()); x <= Math.round(box.getRight()); x++) {
+            for (int y = Math.round(box.getBottom()); y <= Math.round(box.getTop()); y++) {
+                game.getTileMap().removeEntityFromTile(entity, new IntVector(x, y));
+            }
+        }
         loadedEntities.remove(entity);
     }
 
@@ -61,14 +71,23 @@ public class EntityManager extends NetworkedManager {
     @Override
     public void fixedUpdate(float fixedDeltaTime) {
         loadedEntities.forEach(e -> {
-            IntVector playerChunk = e.getPosition().toChunkPos();
-            int deltaX = playerChunk.x - e.getLastFixedPosition().toChunkPos().x;
-            int deltaY = playerChunk.y - e.getLastFixedPosition().toChunkPos().y;
+            Box box = e.getBox();
+            Box lastBox = e.getLastFixedBox();
+            Vector playerPos = box.position;
+            float deltaX = playerPos.x - lastBox.position.x;
+            float deltaY = playerPos.y - lastBox.position.y;
             if (deltaX != 0 || deltaY != 0) {
-                IntVector lastChunkPos = e.getLastFixedPosition().toChunkPos();
-                game.getLogger().printEvent("Entity Moved Chunk (" + lastChunkPos + " - " + playerChunk + ")");
-                game.getTileMap().getChunk(lastChunkPos).removeEntity(e);
-                game.getTileMap().getChunk(playerChunk).addEntity(e);
+                for (int x = Math.round(lastBox.getLeft()); x <= Math.round(lastBox.getRight()); x++) {
+                    for (int y = Math.round(lastBox.getBottom()); y <= Math.round(lastBox.getTop()); y++) {
+                        game.getTileMap().removeEntityFromTile(e, new IntVector(x, y));
+                    }
+                }
+
+                for (int x = Math.round(box.getLeft()); x <= Math.round(box.getRight()); x++) {
+                    for (int y = Math.round(box.getBottom()); y <= Math.round(box.getTop()); y++) {
+                        game.getTileMap().addEntityToTile(e, new IntVector(x, y));
+                    }
+                }
             }
         });
         loadedEntities.forEach(Entity::fixedUpdate);
@@ -146,7 +165,7 @@ public class EntityManager extends NetworkedManager {
     private void handlePlayerConnected(PlayerConnectedEvent event) {
         loadedEntities.forEach(
                 e -> sendEventToClient(new EntitySpawnedEvent(e.getID(), e.getIdentifier(), e.getPosition()),
-                        event.connection));
+                                       event.connection));
     }
 
 
