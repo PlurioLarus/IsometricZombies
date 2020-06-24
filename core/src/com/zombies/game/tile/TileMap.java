@@ -119,4 +119,8 @@ public class TileMap extends NetworkedManager implements ITileMap {
     }
 
 
+    public List<Entity> getEntitiesOnTile(IntVector tilePos) {
+        IntVector chunk = tilePos.toChunkPos();
+        return getChunk(chunk).getEntitiesOnTile(tilePos.minus(chunk.times(CHUNK_SIZE)));
+    }
 }

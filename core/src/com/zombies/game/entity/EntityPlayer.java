@@ -9,7 +9,7 @@ import com.zombies.utils.Vector;
 public class EntityPlayer extends Entity {
 
     public EntityPlayer(Game game, boolean localPlayer, int id) {
-        super(game, localPlayer, id, "player", new Vector(0.5f, 0.5f));
+        super(game, localPlayer, id, "player", new Vector(0.8f, 0.8f), true, false);
         registerBehaviour(new MovingInputBehaviour());
         if (game.getNetworking().isClient()) {
             registerBehaviour(new PlayerRenderBehaviour(new Vector(0.5f, 0)));

@@ -45,4 +45,8 @@ public class Box {
     public Vector getBottomRight() {
         return position.plus(new Vector(0.5f * size.x, -0.5f * size.y));
     }
+
+    public boolean collidesWith(Box box) {
+        return box.getLeft() <= getRight() && box.getRight() >= getLeft() && box.getBottom() <= getTop() && box.getTop() >= getBottom();
+    }
 }

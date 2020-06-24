@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.zombies.events.PlayerConnectedEvent;
 import com.zombies.events.PlayerDisconnectedEvent;
 import com.zombies.game.entity.manager.EntityManager;
+import com.zombies.game.physics.Physics;
 import com.zombies.game.player.Player;
 import com.zombies.game.player.PlayerManager;
 import com.zombies.game.tile.ChunkLoader;
@@ -29,6 +30,7 @@ public class Game extends Group {
     private PlayerManager playerManager;
     private TileMap tileMap;
     private EntityManager entityManager;
+    private Physics physics;
     private final Logger logger;
 
     private final World world;
@@ -42,6 +44,7 @@ public class Game extends Group {
     }
 
     private void initialize() throws IOException {
+        physics = new Physics(this);
         tileMap = new TileMap(this);
         chunkLoader = new ChunkLoader(this);
         entityManager = new EntityManager(this);
@@ -61,10 +64,10 @@ public class Game extends Group {
                 public void disconnected(Connection connection) {
                     super.disconnected(connection);
                     Player player = playerManager.getPlayers()
-                            .stream()
-                            .filter(e -> e.connection.equals(connection))
-                            .findAny()
-                            .orElse(null);
+                                                 .stream()
+                                                 .filter(e -> e.connection.equals(connection))
+                                                 .findAny()
+                                                 .orElse(null);
                     getLogger().printEvent("Connection was Closed");
                     if (player != null) {
                         getLogger().printEvent("Dispatching Disconnected Event");
@@ -159,5 +162,9 @@ public class Game extends Group {
 
     public boolean isServer() {
         return isServer;
+    }
+
+    public Physics getPhysics() {
+        return physics;
     }
 }

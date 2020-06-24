@@ -92,4 +92,8 @@ public class Chunk {
             }
         }
     }
+
+    public List<Entity> getEntitiesOnTile(IntVector position) {
+        return chunkEntities[position.x][position.y];
+    }
 }
