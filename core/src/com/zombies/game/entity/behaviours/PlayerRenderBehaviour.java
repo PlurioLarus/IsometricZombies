@@ -26,10 +26,10 @@ public class PlayerRenderBehaviour implements IBehaviour {
     public void draw(Batch batch, Entity entity) {
         switch (entity.getDirection()) {
             case BOTTOM_LEFT:
-                texture = TextureRegistry.get("characterBL");
+                texture = TextureRegistry.get(entity.isLocalPlayer() ? "characterBL" : "character_02BL");
                 break;
             case BOTTOM_RIGHT:
-                texture = TextureRegistry.get("characterBR");
+                texture = TextureRegistry.get(entity.isLocalPlayer() ? "characterBR" : "character_02BR");
                 break;
             default:
         }

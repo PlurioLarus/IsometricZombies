@@ -83,6 +83,8 @@ public class Game extends Group {
         } else {
             TextureRegistry.register("characterBL", new Texture("character/characterBL.png"));
             TextureRegistry.register("characterBR", new Texture("character/characterBR.png"));
+            TextureRegistry.register("character_02BR", new Texture("character/character_02BR.png"));
+            TextureRegistry.register("character_02BL", new Texture("character/character_02BL.png"));
             TextureRegistry.register("fancyTile", new Texture("tiles/fancyTile.png"));
 
             TextureRegistry.register("shadow01", new Texture("shadows/shadow01.png"));
