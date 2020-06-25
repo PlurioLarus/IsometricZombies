@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.entity.behaviours.IBehaviour;
 import com.zombies.game.tile.Tile;
 import com.zombies.main.Game;
+import com.zombies.rendering.IDrawable;
 import com.zombies.utils.Box;
 import com.zombies.utils.Direction;
 import com.zombies.utils.Vector;
@@ -11,7 +12,7 @@ import com.zombies.utils.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Entity implements IEntity {
+public abstract class Entity implements IEntity, IDrawable {
     protected Box box;
     protected Vector lastPosition = new Vector(0, 0);
     protected Vector lastFixedPosition = new Vector(0, 0);
@@ -129,6 +130,9 @@ public abstract class Entity implements IEntity {
         }
         if (!this.getPosition().equals(newPos)) {
             setPosition(newPos);
+            if (game.getNetworking().isClient()) {
+                game.getParticleManager().spawnGrawlingParticles(this.getPosition());
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package com.zombies.utils;
 import com.zombies.main.IsometricZombies;
 
 import java.util.Objects;
+import java.util.Random;
 
 public class Vector {
 
@@ -49,7 +50,8 @@ public class Vector {
      * @return
      */
     public IntVector toChunkPos() {
-        return new IntVector((int) Math.floor(this.x / IsometricZombies.CHUNK_SIZE), (int) Math.floor(this.y / IsometricZombies.CHUNK_SIZE));
+        return new IntVector((int) Math.floor(this.x / IsometricZombies.CHUNK_SIZE),
+                             (int) Math.floor(this.y / IsometricZombies.CHUNK_SIZE));
     }
 
     public float getLength() {
@@ -68,6 +70,10 @@ public class Vector {
         return new IntVector(Math.round(this.x), Math.round(this.y));
     }
 
+    public Vector round() {
+        return new Vector(Math.round(this.x), Math.round(this.y));
+    }
+
     @Override
     public String toString() {
         return "Vector{" +
@@ -78,8 +84,12 @@ public class Vector {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Vector vector = (Vector) o;
         return Float.compare(vector.x, x) == 0 &&
                 Float.compare(vector.y, y) == 0;
@@ -97,4 +107,10 @@ public class Vector {
     public boolean nearby(Vector other, float maxSquaredDistance) {
         return this.minus(other).getSquaredLength() < maxSquaredDistance;
     }
+
+    public static Vector randomUnitSphere() {
+        Random rand = new Random();
+        return new Vector(rand.nextFloat() * 2f - 1, rand.nextFloat() * 2f - 1);
+    }
+
 }

@@ -5,6 +5,7 @@ import com.zombies.game.entity.Entity;
 import com.zombies.game.tile.objects.TileObject;
 import com.zombies.main.Game;
 import com.zombies.main.IsometricZombies;
+import com.zombies.rendering.IDrawable;
 import com.zombies.utils.IntVector;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
 public class Chunk {
     private final Game game;
     public final IntVector chunkPosition;
-    //private final List<Entity> chunkEntities;
+    private final List<IDrawable>[][] drawables;
     private final List<Entity>[][] chunkEntities;
 
     public final Tile[][] tiles;
@@ -38,6 +39,12 @@ public class Chunk {
                 chunkEntities[x][y] = new ArrayList<>();
             }
         }
+        drawables = new List[IsometricZombies.CHUNK_SIZE][IsometricZombies.CHUNK_SIZE];
+        for (int x = 0; x < this.tiles.length; x++) {
+            for (int y = 0; y < this.tiles[x].length; y++) {
+                drawables[x][y] = new ArrayList<>();
+            }
+        }
     }
 
     public Tile getTile(IntVector relativeTilePos) {
@@ -48,7 +55,10 @@ public class Chunk {
      * @param entity
      * @param position Position in chunk space
      */
-    public void addEntity(Entity entity, IntVector position) {
+    public void addEntity(Entity entity, IntVector position, boolean isOnTile) {
+        if (isOnTile) {
+            drawables[position.x][position.y].add(entity);
+        }
         chunkEntities[position.x][position.y].add(entity);
     }
 
@@ -56,7 +66,10 @@ public class Chunk {
      * @param entity
      * @param position Position in chunk space
      */
-    public void removeEntity(Entity entity, IntVector position) {
+    public void removeEntity(Entity entity, IntVector position, boolean isOnTile) {
+        if (isOnTile) {
+            drawables[position.x][position.y].remove(entity);
+        }
         chunkEntities[position.x][position.y].remove(entity);
     }
 
@@ -83,17 +96,20 @@ public class Chunk {
                 }
                 int finalX = x;
                 int finalY = y;
-                chunkEntities[x][y].stream()
-                                   .filter(e -> e.getPosition()
-                                                 .roundToIntVector()
-                                                 .toChunkOffset()
-                                                 .equals(new IntVector(finalX, finalY)))
-                                   .forEach(e -> e.draw(batch));
+                drawables[x][y].forEach(d -> d.draw(batch));
             }
         }
     }
 
     public List<Entity> getEntitiesOnTile(IntVector position) {
         return chunkEntities[position.x][position.y];
+    }
+
+    public void addDrawable(IDrawable drawable, IntVector position) {
+        drawables[position.x][position.y].add(drawable);
+    }
+
+    public void removeDrawable(IDrawable drawable, IntVector position) {
+        drawables[position.x][position.y].remove(drawable);
     }
 }

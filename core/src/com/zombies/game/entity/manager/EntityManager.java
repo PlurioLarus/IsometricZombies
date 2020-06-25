@@ -47,7 +47,8 @@ public class EntityManager extends NetworkedManager {
         Box box = entity.getBox();
         for (int x = Math.round(box.getLeft()); x <= Math.round(box.getRight()); x++) {
             for (int y = Math.round(box.getBottom()); y <= Math.round(box.getTop()); y++) {
-                game.getTileMap().removeEntityFromTile(entity, new IntVector(x, y));
+                IntVector vec = new IntVector(x, y);
+                game.getTileMap().addEntityToTile(entity, vec, vec.equals(box.position.roundToIntVector()));
             }
         }
         loadedEntities.add(entity);
@@ -57,7 +58,8 @@ public class EntityManager extends NetworkedManager {
         Box box = entity.getBox();
         for (int x = Math.round(box.getLeft()); x <= Math.round(box.getRight()); x++) {
             for (int y = Math.round(box.getBottom()); y <= Math.round(box.getTop()); y++) {
-                game.getTileMap().removeEntityFromTile(entity, new IntVector(x, y));
+                IntVector vec = new IntVector(x, y);
+                game.getTileMap().removeEntityFromTile(entity, vec, vec.equals(box.position.roundToIntVector()));
             }
         }
         loadedEntities.remove(entity);
@@ -79,13 +81,15 @@ public class EntityManager extends NetworkedManager {
             if (deltaX != 0 || deltaY != 0) {
                 for (int x = Math.round(lastBox.getLeft()); x <= Math.round(lastBox.getRight()); x++) {
                     for (int y = Math.round(lastBox.getBottom()); y <= Math.round(lastBox.getTop()); y++) {
-                        game.getTileMap().removeEntityFromTile(e, new IntVector(x, y));
+                        IntVector vec = new IntVector(x, y);
+                        game.getTileMap().removeEntityFromTile(e, vec, vec.equals(lastBox.position.roundToIntVector()));
                     }
                 }
 
                 for (int x = Math.round(box.getLeft()); x <= Math.round(box.getRight()); x++) {
                     for (int y = Math.round(box.getBottom()); y <= Math.round(box.getTop()); y++) {
-                        game.getTileMap().addEntityToTile(e, new IntVector(x, y));
+                        IntVector vec = new IntVector(x, y);
+                        game.getTileMap().addEntityToTile(e, vec, vec.equals(box.position.roundToIntVector()));
                     }
                 }
             }

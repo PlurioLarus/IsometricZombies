@@ -6,6 +6,7 @@ import com.zombies.events.tilemap.ChunkEvent;
 import com.zombies.game.entity.Entity;
 import com.zombies.main.Game;
 import com.zombies.networking.NetworkedManager;
+import com.zombies.rendering.IDrawable;
 import com.zombies.utils.IntVector;
 import com.zombies.utils.Vector;
 
@@ -64,14 +65,24 @@ public class TileMap extends NetworkedManager implements ITileMap {
         return loadedChunks.get(chunkPosition);
     }
 
-    public void addEntityToTile(Entity entity, IntVector vector) {
+    public void addEntityToTile(Entity entity, IntVector vector, boolean isOnTile) {
         IntVector chunk = vector.toChunkPos();
-        getChunk(chunk).addEntity(entity, vector.minus(chunk.times(CHUNK_SIZE)));
+        getChunk(chunk).addEntity(entity, vector.minus(chunk.times(CHUNK_SIZE)), isOnTile);
     }
 
-    public void removeEntityFromTile(Entity entity, IntVector position) {
+    public void addDrawable(IDrawable drawable, IntVector vector) {
+        IntVector chunk = vector.toChunkPos();
+        getChunk(chunk).addDrawable(drawable, vector.minus(chunk.times(CHUNK_SIZE)));
+    }
+
+    public void removeDrawable(IDrawable drawable, IntVector vector) {
+        IntVector chunk = vector.toChunkPos();
+        getChunk(chunk).removeDrawable(drawable, vector.minus(chunk.times(CHUNK_SIZE)));
+    }
+
+    public void removeEntityFromTile(Entity entity, IntVector position, boolean isOnTile) {
         IntVector chunk = position.toChunkPos();
-        getChunk(chunk).removeEntity(entity, position.minus(chunk.times(CHUNK_SIZE)));
+        getChunk(chunk).removeEntity(entity, position.minus(chunk.times(CHUNK_SIZE)), isOnTile);
     }
 
     @Override

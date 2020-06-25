@@ -8,11 +8,13 @@ import com.zombies.utils.Vector;
 
 public class MovingInputBehaviour implements IBehaviour {
 
-    private static final float SPEED = 6;
+    private static final float SPEED = 4;
 
     @Override
     public void update(float deltaTime, Entity entity) {
-        if (!entity.isLocalPlayer()) return;
+        if (!entity.isLocalPlayer()) {
+            return;
+        }
         Vector movingVector = Vector.zero;
         if (Input.keyDown(Input.Keys.W)) {
             movingVector = movingVector.plus(new Vector(1, 1));
@@ -27,7 +29,9 @@ public class MovingInputBehaviour implements IBehaviour {
             movingVector = movingVector.plus(new Vector(-1, 1));
         }
         movingVector = movingVector.normalize().times(deltaTime * SPEED);
-        if (movingVector.getSquaredLength() == 0) return;
+        if (movingVector.getSquaredLength() == 0) {
+            return;
+        }
         entity.transformPosition(movingVector);
         entity.getGame().getEntityManager().sendEventToServer(new PlayerMovedEvent(movingVector, entity.getID()));
     }

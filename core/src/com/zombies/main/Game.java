@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.zombies.events.PlayerConnectedEvent;
 import com.zombies.events.PlayerDisconnectedEvent;
 import com.zombies.game.entity.manager.EntityManager;
+import com.zombies.game.particles.ParticleManager;
 import com.zombies.game.physics.Physics;
 import com.zombies.game.player.Player;
 import com.zombies.game.player.PlayerManager;
@@ -31,6 +32,7 @@ public class Game extends Group {
     private TileMap tileMap;
     private EntityManager entityManager;
     private Physics physics;
+    private ParticleManager particleManager;
     private final Logger logger;
 
     private final World world;
@@ -49,6 +51,7 @@ public class Game extends Group {
         chunkLoader = new ChunkLoader(this);
         entityManager = new EntityManager(this);
         playerManager = new PlayerManager(this);
+        particleManager = new ParticleManager(this);
         if (isServer) {
             networking = Networking.server(new Listener() {
                 @Override
@@ -97,6 +100,7 @@ public class Game extends Group {
             TextureRegistry.register("shadow31", new Texture("shadows/shadow31.png"));
             TextureRegistry.register("shadow32", new Texture("shadows/shadow32.png"));
             TextureRegistry.register("shadow33", new Texture("shadows/shadow33.png"));
+            TextureRegistry.register("dirt-particle", new Texture("particles/dirt.png"));
 
             TextureRegistry.register("tree", new Texture("tileObjects/tree.png"));
             networking = Networking.client("localhost", null);
@@ -110,6 +114,7 @@ public class Game extends Group {
         super.act(delta);
         tileMap.update(delta);
         entityManager.update(delta);
+        particleManager.update(delta);
     }
 
     public void setCameraPosition(Vector screenPosition) {
@@ -166,5 +171,9 @@ public class Game extends Group {
 
     public Physics getPhysics() {
         return physics;
+    }
+
+    public ParticleManager getParticleManager() {
+        return particleManager;
     }
 }
