@@ -14,6 +14,7 @@ import java.util.List;
 public abstract class Entity implements IEntity {
     protected Box box;
     protected Vector lastPosition = new Vector(0, 0);
+    protected Vector lastMove = new Vector(-1,-1); //TODO: fix initial values
     protected Vector lastFixedPosition = new Vector(0, 0);
     protected List<IBehaviour> behaviours = new ArrayList<>();
 
@@ -91,14 +92,17 @@ public abstract class Entity implements IEntity {
         return game.getTileMap().getTile(box.position);
     }
 
-    public Direction getDirection() {
-        Vector lastMove = box.position.minus(lastPosition);
-        if (lastMove.x < 0) {
-            return Direction.BOTTOM_LEFT;
-        } else if (lastMove.x > 0) {
-            return Direction.BOTTOM_RIGHT;
+    public Vector getLastMove(){
+        Vector newMove = box.position.minus(lastPosition);
+        if (!newMove.isZero()){
+            lastMove = newMove;
         }
-        return Direction.TOP_LEFT;
+        return lastMove;
+    }
+
+    public Direction getDirection() {
+        Vector move = getLastMove();
+        return Direction.get(move);
     }
 
     @Override

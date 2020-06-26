@@ -78,6 +78,11 @@ public class Game extends Group {
                 }
             });
         } else {
+            TextureRegistry.register("red", new Texture("red.png"));
+            TextureRegistry.register("characterT", new Texture("character/characterT.png"));
+            TextureRegistry.register("characterTL", new Texture("character/characterTL.png"));
+            TextureRegistry.register("characterTR", new Texture("character/characterTR.png"));
+            TextureRegistry.register("characterB", new Texture("character/characterB.png"));
             TextureRegistry.register("characterBL", new Texture("character/characterBL.png"));
             TextureRegistry.register("characterBR", new Texture("character/characterBR.png"));
             TextureRegistry.register("fancyTile", new Texture("tiles/fancyTile.png"));

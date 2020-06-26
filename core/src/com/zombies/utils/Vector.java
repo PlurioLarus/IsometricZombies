@@ -20,6 +20,10 @@ public class Vector {
         this.y = 0;
     }
 
+    public double getArg(){
+        return Math.atan2(y,x);
+    }
+
     public Vector plus(Vector vector) {
         return new Vector(this.x + vector.x, this.y + vector.y);
     }
@@ -96,5 +100,9 @@ public class Vector {
 
     public boolean nearby(Vector other, float maxSquaredDistance) {
         return this.minus(other).getSquaredLength() < maxSquaredDistance;
+    }
+
+    public boolean isZero() {
+        return this.equals(zero);
     }
 }
