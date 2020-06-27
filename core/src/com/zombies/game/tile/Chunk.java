@@ -3,6 +3,7 @@ package com.zombies.game.tile;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.zombies.game.entity.Entity;
 import com.zombies.game.tile.objects.TileObject;
+import com.zombies.game.tile.structure.Structure;
 import com.zombies.main.Game;
 import com.zombies.main.IsometricZombies;
 import com.zombies.utils.IntVector;
@@ -89,6 +90,11 @@ public class Chunk {
                                                  .toChunkOffset()
                                                  .equals(new IntVector(finalX, finalY)))
                                    .forEach(e -> e.draw(batch));
+
+                Structure structure = this.tiles[x][y].getStructure();
+                if (structure != null) {
+                    structure.drawComponent(batch, chunkPosition.times(32).plus(new IntVector(x, y)));
+                }
             }
         }
     }

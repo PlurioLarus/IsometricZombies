@@ -2,6 +2,7 @@ package com.zombies.game.tile;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.zombies.game.tile.objects.TileObject;
+import com.zombies.game.tile.structure.Structure;
 import com.zombies.game.world.World;
 import com.zombies.main.Game;
 import com.zombies.rendering.TextureRegistry;
@@ -14,6 +15,7 @@ public abstract class Tile {
     TileObject tileObject;
     IntVector position;
     int height;
+    Structure structure;
 
 
     public Tile(Game game, IntVector position, int height, String textureId) {
@@ -50,5 +52,9 @@ public abstract class Tile {
 
     public TileObject getTileObject() {
         return tileObject;
+    }
+
+    public Structure getStructure() {
+        return structure;
     }
 }
