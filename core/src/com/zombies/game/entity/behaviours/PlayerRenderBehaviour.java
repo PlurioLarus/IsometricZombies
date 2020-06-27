@@ -26,18 +26,22 @@ public class PlayerRenderBehaviour implements IBehaviour {
     @Override
     public void draw(Batch batch, Entity entity) {
         switch (entity.getDirection()){
-            case TOP:           texture = TextureRegistry.get("characterT");
-                                break;
-            case TOP_LEFT:      texture = TextureRegistry.get("characterTL");
-                                break;
-            case TOP_RIGHT:     texture = TextureRegistry.get("characterTR");
-                                break;
-            case BOTTOM:        texture = TextureRegistry.get("characterB");
-                                break;
-            case BOTTOM_LEFT:   texture = TextureRegistry.get("characterBL");
-                                break;
-            case BOTTOM_RIGHT:  texture = TextureRegistry.get("characterBR");
-                                break;
+            case TOP:           texture = TextureRegistry.get("hans_T");
+                break;
+            case TOP_RIGHT:     texture = TextureRegistry.get("hans_TR");
+                break;
+            case RIGHT:     texture = TextureRegistry.get("hans_R");
+                break;
+            case BOTTOM_RIGHT:  texture = TextureRegistry.get("hans_BR");
+                break;
+            case BOTTOM:        texture = TextureRegistry.get("hans_B");
+                break;
+            case LEFT:   texture = TextureRegistry.get("hans_L");
+                break;
+            case BOTTOM_LEFT:   texture = TextureRegistry.get("hans_BL");
+                break;
+            case TOP_LEFT:      texture = TextureRegistry.get("hans_TL");
+                break;
             default:
         }
 
